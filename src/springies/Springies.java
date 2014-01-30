@@ -7,6 +7,9 @@ import jboxGlue.WorldManager;
 import jgame.JGColor;
 import jgame.JGObject;
 import jgame.platform.JGEngine;
+import nodes.Fixed;
+import nodes.Mass;
+
 import org.jbox2d.common.Vec2;
 
 
@@ -47,6 +50,8 @@ public class Springies extends JGEngine
         WorldManager.getWorld().setGravity(new Vec2(0.0f, 0.1f));
         addBall();
         addWalls();
+        new Mass("mass", pfWidth()/2, pfHeight()/2, 2);
+        new Fixed("fixed", pfWidth()/2, pfHeight()/2);
     }
 
     public void addBall ()
