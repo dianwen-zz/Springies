@@ -4,13 +4,13 @@
     <author>Dianwan Li, Anthony Olawo</author>
 
     <nodes>
-        <mass id="m1" x="100" y="400"/>
-        <mass id="m2" x="200" y="400"/>
-        <mass id="m3" x="100" y="300"/>
-        <mass id="m4" x="200" y="300"/>  
+        <mass id="m1" x="100" y="100" xvel="1" yvel="1" mass = "1"/>
+        <mass id="m2" x="200" y="200" xvel="2" yvel="2" mass = "2"/>
+        <mass id="m3" x="300" y="300" xvel="3" yvel="3" mass = "3"/>
+        <mass id="m4" x="400" y="400" xvel="4" yvel="4" mass = "4"/>
         
-        <fixed id="m5" x="300" y="400">
-        <fixed id="m5" x="400" y="400">
+        <fixed id="m5" x="300" y="400"/>
+        <fixed id="m5" x="400" y="400"/>
     </nodes>
     
     <links>
