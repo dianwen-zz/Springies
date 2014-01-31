@@ -14,7 +14,7 @@ public class DOMParser {
 	public static void main(String args[]) {
 		try {
 
-			File stocks = new File("assets/Model_1.xml");
+			File stocks = new File("assets/example.xml");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(stocks);
@@ -25,14 +25,51 @@ public class DOMParser {
 
 			//parse nodes
 			NodeList nodes = doc.getElementsByTagName("nodes");
-			for (int i = 0; i < nodes.getLength(); i++) {
+				System.out.println("total nodes: " + nodes.getLength());
+				//get masses
+				System.out.println("dynamic masses:");
 				NodeList nodeNodes = doc.getElementsByTagName("mass");
 				for( int j = 0; j < nodeNodes.getLength(); j++){
 					Node node = nodeNodes.item(j);
 					System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node) +
-									   " xvel: " + getNodeAttr("xvel", node) + " yvel: " + getNodeAttr("yvel", node) + " mass: " + getNodeAttr("mass", node));
+							" vx: " + getNodeAttr("vx", node) + " vy: " + getNodeAttr("vy", node) + " mass: " + getNodeAttr("mass", node));
 				}
-			}
+				System.out.println();
+
+				//get fixed masses
+				System.out.println("fixed masses:");
+				nodeNodes = doc.getElementsByTagName("fixed");
+				for( int j = 0; j < nodeNodes.getLength(); j++){
+					Node node = nodeNodes.item(j);
+					System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node));
+				}
+				System.out.println();
+
+			
+
+			//parse links
+			nodes = doc.getElementsByTagName("links");
+				//get springs
+				System.out.println("springs:");
+				nodeNodes = doc.getElementsByTagName("spring");
+				for( int j = 0; j < nodeNodes.getLength(); j++){
+					Node node = nodeNodes.item(j);
+					System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
+							" constant: " + getNodeAttr("constant", node));
+				}
+				System.out.println();
+
+				//get fixed muscles
+				System.out.println("muscles:");
+				nodeNodes = doc.getElementsByTagName("muscle");
+				for( int j = 0; j < nodeNodes.getLength(); j++){
+					Node node = nodeNodes.item(j);
+					System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
+							" constant: " + getNodeAttr("constant", node) + " amplitude: " + getNodeAttr("amplitude", node));				}
+				System.out.println();
+
+			
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
