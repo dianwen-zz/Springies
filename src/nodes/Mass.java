@@ -13,6 +13,7 @@ public class Mass extends SuperMass {
 	public Mass(String id, float x, float y, float mass) {
 		// TODO Auto-generated constructor stub
 		super(id, MASS_COLLISION_ID, MASS_COLOR, x, y, mass);
+		setPos(x,y);
 	}
 	
 	public void hit (JGObject other){ //follow similar behavior as a bouncing ball

@@ -15,6 +15,4 @@ public class SuperLink {
 		this.constant= constant; 
 	}
 	
-	
-
 }
