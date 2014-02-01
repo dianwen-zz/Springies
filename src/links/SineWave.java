@@ -13,6 +13,13 @@ public final class SineWave {
 		runWave(); 
 	}
 	
+	public SineWave(double maxAmplitude){
+		angle = 0; 
+		this.maxAmplitude = maxAmplitude; 
+		this.oscillations = 1; 	
+		runWave(); 
+	}
+	
 	public void runWave(){
 		for(int i=0; i<oscillations; i++){
 			oscillate();

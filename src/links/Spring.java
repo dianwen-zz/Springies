@@ -1,11 +1,30 @@
 package links;
+import nodes.SuperMass;
+import org.jbox2d.common.Vec2;
 
-public class Spring extends SuperLink{
-	private static final int SPRING_COLLISION_ID = 2;
+public class Spring extends Force{
+	private SuperMass massA;
+	private SuperMass massB;
+	private float constant;
+	private float restLength;
 	
-	public Spring(String massA, String massB, float restlength, float constant, float amplitude) {
-		// TODO Auto-generated constructor stub
-		super(massA, massB, restlength, constant);
+	public Spring(SuperMass a, SuperMass b, float rl, float c) {
+		massA = a;
+		massB = b;
+		constant = c;
+		restLength = rl;
+	}
+
+	@Override
+	Vec2 calculateForce() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	void setForce(SuperMass m) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

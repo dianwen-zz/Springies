@@ -1,16 +1,10 @@
 package links;
 
-public class Force {
+import nodes.SuperMass;
 
-	int xdir; 
-	int ydir; 
-	int factor; 
-	
-	public Force(int xdir, int ydir, int factor) {
-		// TODO Auto-generated constructor stub
-		this.xdir = xdir; 
-		this.ydir = ydir;
-		this.factor = factor; 
-	}
+import org.jbox2d.common.Vec2;
 
+public abstract class Force {
+	abstract Vec2 calculateForce();
+	abstract void setForce(SuperMass m);
 }
