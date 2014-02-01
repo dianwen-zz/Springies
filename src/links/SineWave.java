@@ -3,18 +3,17 @@ package links;
 public final class SineWave {
 	private double maxAmplitude; 
 	private double amplitude; 
-	private double frequency;
-	private double period; 
 	private double oscillations; 
 	private double angle;
 	
-	public SineWave(double maxAmplitude, double frequency, double oscillations){
+	public SineWave(double maxAmplitude,  double oscillations){
 		angle = 0; 
 		this.maxAmplitude = maxAmplitude; 
-		this.frequency = frequency; 
-		this.period = 1/frequency; 
-		this.oscillations = oscillations; 
-		
+		this.oscillations = oscillations; 	
+		runWave(); 
+	}
+	
+	public void runWave(){
 		for(int i=0; i<oscillations; i++){
 			oscillate();
 			angle = 0; 
