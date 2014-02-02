@@ -14,6 +14,7 @@ import jboxGlue.WorldManager;
 import jgame.JGColor;
 import jgame.JGObject;
 import jgame.platform.JGEngine;
+import nodes.Fixed;
 import nodes.Mass;
 import nodes.SuperMass;
 
@@ -128,85 +129,99 @@ public class Springies extends JGEngine
 			System.out.println("root of xml file" + doc.getDocumentElement().getNodeName());
 			System.out.println("==========================");
 
-			//parse nodes
-			NodeList nodes = doc.getElementsByTagName("nodes");
-			//get masses
-			System.out.println("dynamic masses:");
-			NodeList nodeNodes = doc.getElementsByTagName("mass");
-			for( int j = 0; j < nodeNodes.getLength(); j++){
-				Node node = nodeNodes.item(j);
-				System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node) +
-						" vx: " + getNodeAttr("vx", node) + " vy: " + getNodeAttr("vy", node) + " mass: " + getNodeAttr("mass", node));
-
-				float gravAccel = (float)1;
-				float mass = 1;
-				float xv = 0;
-				float yv = 0;
-	
-				if(!(getNodeAttr("mass", node).equals(""))){
-					mass = Float.parseFloat(getNodeAttr("mass", node));
-				}
-				if(!(getNodeAttr("xv", node).equals(""))){
-					xv = Float.parseFloat(getNodeAttr("xv", node));
-				}
-				if(!(getNodeAttr("yv", node).equals(""))){
-					yv = Float.parseFloat(getNodeAttr("yv", node));
-				}
-				float x = Float.parseFloat(getNodeAttr("x", node));
-				float y = Float.parseFloat(getNodeAttr("y", node));
-				String id = getNodeAttr("id", node);
-				System.out.println(mass);
-
-				obj.put(id, new Mass(id, x, y, mass, xv, yv, gravAccel));
-			}
+			//parse fixed and dynamic masses
+			buildDynamicMasses(doc);
 			System.out.println();
-
-			//get fixed masses
-			System.out.println("fixed masses:");
-			nodeNodes = doc.getElementsByTagName("fixed");
-			for( int j = 0; j < nodeNodes.getLength(); j++){
-				Node node = nodeNodes.item(j);
-				System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node));
-			}
+			buildFixedMasses(doc);
 			System.out.println();
-
-
 
 			//parse links
-			nodes = doc.getElementsByTagName("links");
-			//get springs
-			System.out.println("springs:");
-			nodeNodes = doc.getElementsByTagName("spring");
-			for( int j = 0; j < nodeNodes.getLength(); j++){
-				Node node = nodeNodes.item(j);
-				System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
-						" constant: " + getNodeAttr("constant", node));
-
-				double constant = 1;
-				if(!(getNodeAttr("constant", node).equals(""))){
-					constant = Double.parseDouble(getNodeAttr("constant", node));
-				}
-				Mass a = (Mass) obj.get(getNodeAttr("a", node));
-				Mass b = (Mass) obj.get(getNodeAttr("b", node));
-				float rl = Float.parseFloat(getNodeAttr("restlength", node));
-
-				force.add(new Spring(a, b, rl, constant));
-			}
+			buildSprings(doc);
 			System.out.println();
-
-			//get fixed muscles
-			System.out.println("muscles:");
-			nodeNodes = doc.getElementsByTagName("muscle");
-			for( int j = 0; j < nodeNodes.getLength(); j++){
-				Node node = nodeNodes.item(j);
-				System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
-						" constant: " + getNodeAttr("constant", node) + " amplitude: " + getNodeAttr("amplitude", node));				}
+			buildMuscles(doc);
 			System.out.println();
 
 
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
+		}
+	}
+
+	public static void buildMuscles(Document doc) {
+		NodeList nodeNodes;
+		System.out.println("muscles:");
+		nodeNodes = doc.getElementsByTagName("muscle");
+		for( int j = 0; j < nodeNodes.getLength(); j++){
+			Node node = nodeNodes.item(j);
+			System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
+					" constant: " + getNodeAttr("constant", node) + " amplitude: " + getNodeAttr("amplitude", node));				}
+	}
+
+	public static void buildSprings(Document doc) {
+		NodeList nodeNodes;
+		System.out.println("springs:");
+		nodeNodes = doc.getElementsByTagName("spring");
+		for( int j = 0; j < nodeNodes.getLength(); j++){
+			Node node = nodeNodes.item(j);
+			System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
+					" constant: " + getNodeAttr("constant", node));
+
+			double constant = 1;
+			if(!(getNodeAttr("constant", node).equals(""))){
+				constant = Double.parseDouble(getNodeAttr("constant", node));
+			}
+			Mass a = (Mass) obj.get(getNodeAttr("a", node));
+			Mass b = (Mass) obj.get(getNodeAttr("b", node));
+			float rl = Float.parseFloat(getNodeAttr("restlength", node));
+
+			force.add(new Spring(a, b, rl, 2));
+		}
+	}
+
+	public static void buildFixedMasses(Document doc) {
+		System.out.println("fixed masses:");
+		NodeList nodeNodes = doc.getElementsByTagName("fixed");
+		for( int j = 0; j < nodeNodes.getLength(); j++){
+			Node node = nodeNodes.item(j);
+			System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node));
+			
+			String id = getNodeAttr("id", node);
+			float x = Float.parseFloat(getNodeAttr("x", node));
+			float y = Float.parseFloat(getNodeAttr("y", node));
+			
+			obj.put(id, new Fixed(id, x, y));
+		}
+	}
+
+	public static void buildDynamicMasses(Document doc) {
+		System.out.println("dynamic masses:");
+		NodeList nodeNodes = doc.getElementsByTagName("mass");
+		for( int j = 0; j < nodeNodes.getLength(); j++){
+			Node node = nodeNodes.item(j);
+			System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node) +
+					" vx: " + getNodeAttr("vx", node) + " vy: " + getNodeAttr("vy", node) + " mass: " + getNodeAttr("mass", node));
+
+			float gravAccel = (float)1;
+			float mass = 1;
+			float xv = 0;
+			float yv = 0;
+
+			if(!(getNodeAttr("mass", node).equals(""))){
+				mass = Float.parseFloat(getNodeAttr("mass", node));
+			}
+			if(!(getNodeAttr("xv", node).equals(""))){
+				xv = Float.parseFloat(getNodeAttr("xv", node));
+			}
+			if(!(getNodeAttr("yv", node).equals(""))){
+				yv = Float.parseFloat(getNodeAttr("yv", node));
+			}
+			float x = Float.parseFloat(getNodeAttr("x", node));
+			float y = Float.parseFloat(getNodeAttr("y", node));
+			String id = getNodeAttr("id", node);
+			System.out.println(mass);
+
+			obj.put(id, new Mass(id, x, y, mass, xv, yv, gravAccel));
 		}
 	}
 
