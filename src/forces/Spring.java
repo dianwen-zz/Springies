@@ -25,25 +25,17 @@ public class Spring extends Force{
 	public Vec2 calculateForce() {
 		Vec2 locA = massA.getPos();
 		Vec2 locB = massB.getPos();
-		double distance = findDistance(locA,locB);
-		double theta = Math.abs(Math.atan(Math.abs((locB.y-locA.y)/(locB.x-locA.x))));
-		massA.setForce(constant*(distance-restLength)*Math.cos(theta), constant*(distance-restLength)*Math.sin(theta));
-		massB.setForce(-constant*(distance-restLength)*Math.cos(theta), -constant*(distance-restLength)*Math.sin(theta));
-				
-		drawSpring();
 		
+		double distance = findDistance(locA,locB);
+		massA.setForce(constant*(distance-restLength)*(locB.x-locA.x)/distance, constant*(distance-restLength)*(locB.y-locA.y)/distance);
+		massB.setForce(-constant*(distance-restLength)*(locB.x-locA.x)/distance, -constant*(distance-restLength)*(locB.y-locA.y)/distance);
+				
 		return null;
 	}
 	
 	@Override
 	public void paint(){
 		eng.drawLine(massA.getPos().x, massA.getPos().y, massB.getPos().x, massB.getPos().y, 1, JGColor.white);
-	}
-	private void drawSpring(){
-
-		//float[] xBorder = massA.getPos().x
-		//eng.drawPolygon();
-
 	}
 
 	public double findDistance(Vec2 a, Vec2 b){
