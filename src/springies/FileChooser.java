@@ -46,7 +46,7 @@ import javax.swing.filechooser.*;
 public class FileChooser extends JPanel
                              implements ActionListener {
 
-    public File start() {
+    public File getFile() {
     	JFileChooser fc = new JFileChooser();
             int returnVal = fc.showOpenDialog(FileChooser.this);
 
@@ -54,7 +54,7 @@ public class FileChooser extends JPanel
                 File file = fc.getSelectedFile();
                 return file;
             } else {
-                start();
+                getFile();
             }
             return null;
     }
