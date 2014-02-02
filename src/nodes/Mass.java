@@ -19,8 +19,11 @@ public class Mass extends SuperMass {
 		grav = new Gravity(g);
 	}
 	
-	void calculateObjForce(){
-		grav.calculateForce(mass);
+	public void calculateObjForce(){
+		Vec2 gravForce = grav.calculateForce(mass);
+		System.out.println((double)gravForce.x + " " + (double)gravForce.y);
+		this.setForce((double)gravForce.x, (double)gravForce.y);
+		
 	}
 	
 	public void hit (JGObject other){ //follow similar behavior as a bouncing ball

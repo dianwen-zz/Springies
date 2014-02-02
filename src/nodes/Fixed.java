@@ -12,4 +12,10 @@ public class Fixed extends SuperMass {
 		super(id, FIXED_COLLISION_ID, FIXED_COLOR, x, y, 0);
 	}
 
+	@Override
+	public void calculateObjForce() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

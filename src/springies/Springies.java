@@ -1,5 +1,7 @@
 package springies;
 
+import java.util.ArrayList;
+
 import jboxGlue.PhysicalObject;
 import jboxGlue.PhysicalObjectCircle;
 import jboxGlue.PhysicalObjectRect;
@@ -9,6 +11,7 @@ import jgame.JGObject;
 import jgame.platform.JGEngine;
 import nodes.Fixed;
 import nodes.Mass;
+import nodes.SuperMass;
 
 import org.jbox2d.common.Vec2;
 
@@ -18,6 +21,7 @@ import forces.Gravity;
 @SuppressWarnings("serial")
 public class Springies extends JGEngine
 {
+	ArrayList<SuperMass> obj = new ArrayList<SuperMass>();
     public Springies ()
     {
         // set the window size
@@ -49,12 +53,12 @@ public class Springies extends JGEngine
         // so gravity is up in world coords and down in game coords
         // so set all directions (e.g., forces, velocities) in world coords
         WorldManager.initWorld(this);
-        WorldManager.getWorld().setGravity(new Vec2(0.0f, 0.1f));
+        WorldManager.getWorld().setGravity(new Vec2(0.0f, 0.0f));
         addBall();
         addWalls();
-        float gravAccel = (float)9.81;
-        new Mass("mass", pfWidth()/2, pfHeight()/2+10, 2, gravAccel);
-        new Fixed("fixed", pfWidth()/2, pfHeight()/2);
+        float gravAccel = (float).5;
+        obj.add(new Mass("mass", pfWidth()/2+5, pfHeight()/2-100, 2, gravAccel));
+        obj.add(new Fixed("fixed", pfWidth()/2, pfHeight()/2));
     }
 
     public void addBall ()
@@ -111,6 +115,9 @@ public class Springies extends JGEngine
     {
         // update game objects
         WorldManager.getWorld().step(1f, 1);
+        for(SuperMass o: obj){
+        	o.calculateObjForce();
+        }
         
         moveObjects();
         checkCollision(1 + 2, 1);
