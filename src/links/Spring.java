@@ -22,9 +22,10 @@ public class Spring extends Force{
 	}
 
 	@Override
-	void setForce(SuperMass m) {
+	Vec2 calculateForce(SuperMass m) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 
+	
 }

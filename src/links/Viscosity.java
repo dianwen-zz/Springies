@@ -10,7 +10,10 @@ import nodes.SuperMass;
 
 public class Viscosity extends Force{
 
-	public Viscosity(int xdir, int ydir, int factor) {
+	private float scale; 
+	
+	public Viscosity(float scale) {
+		this.scale = scale; 
 		// TODO Auto-generated constructor stub
 	}
 
@@ -21,9 +24,11 @@ public class Viscosity extends Force{
 	}
 
 	@Override
-	void setForce(SuperMass m) {
+	Vec2 calculateForce(SuperMass m) {
 		// TODO Auto-generated method stub
-		
+		return new Vec2(-scale*m.getMass(), -scale*m.getMass());
 	}
+
+
 
 }

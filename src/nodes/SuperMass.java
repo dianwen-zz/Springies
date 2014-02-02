@@ -26,7 +26,9 @@ public class SuperMass extends PhysicalObject{
 		this.setForce(0, 0);
 	}
 
-
+	public float getMass(){
+		return mass; 
+	}
     @Override
     public void paintShape ()
     {
