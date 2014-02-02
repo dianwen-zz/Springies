@@ -171,11 +171,14 @@ public class Springies extends JGEngine
 			if(!(getNodeAttr("constant", node).equals(""))){
 				constant = Double.parseDouble(getNodeAttr("constant", node));
 			}
-			Mass a = (Mass) obj.get(getNodeAttr("a", node));
-			Mass b = (Mass) obj.get(getNodeAttr("b", node));
-			float rl = Float.parseFloat(getNodeAttr("restlength", node));
+			float rl = 50;
+			if(!(getNodeAttr("restlength", node).equals(""))){
+				rl = Float.parseFloat(getNodeAttr("restlength", node));
+			}
+			SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
+			SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
 
-			force.add(new Spring(a, b, rl, 2));
+			force.add(new Spring(a, b, rl, constant));
 		}
 	}
 
