@@ -8,17 +8,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import jboxGlue.PhysicalObject;
-import jboxGlue.PhysicalObjectCircle;
 import jboxGlue.PhysicalObjectRect;
 import jboxGlue.WorldManager;
 import jgame.JGColor;
-import jgame.JGObject;
 import jgame.platform.JGEngine;
 import nodes.Fixed;
 import nodes.Mass;
 import nodes.SuperMass;
 
-import org.jbox2d.common.Vec2;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -34,7 +31,7 @@ public class Springies extends JGEngine
 {
 	static HashMap<String,SuperMass> obj = new HashMap<String,SuperMass>();
 	static ArrayList<Force> force = new ArrayList<Force>();
-	
+
 	public Springies ()
 	{
 		// set the window size
@@ -116,7 +113,6 @@ public class Springies extends JGEngine
 		// the objects paint themselves
 	}
 
-
 	public static void chooseFile() {
 		final FileChooser fc = new FileChooser();
 		File file = fc.start();
@@ -140,10 +136,8 @@ public class Springies extends JGEngine
 			System.out.println();
 			buildMuscles(doc);
 			System.out.println();
-
-
-
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -188,11 +182,11 @@ public class Springies extends JGEngine
 		for( int j = 0; j < nodeNodes.getLength(); j++){
 			Node node = nodeNodes.item(j);
 			System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node));
-			
+
 			String id = getNodeAttr("id", node);
 			float x = Float.parseFloat(getNodeAttr("x", node));
 			float y = Float.parseFloat(getNodeAttr("y", node));
-			
+
 			obj.put(id, new Fixed(id, x, y));
 		}
 	}
@@ -226,12 +220,6 @@ public class Springies extends JGEngine
 
 			obj.put(id, new Mass(id, x, y, mass, xv, yv, gravAccel));
 		}
-	}
-
-	private static String getValue(String tag, Element element) {
-		NodeList nodes = element.getElementsByTagName(tag).item(0).getChildNodes();
-		Node node = (Node) nodes.item(0);
-		return node.getNodeValue();
 	}
 
 	protected static String getNodeAttr(String attrName, Node node ) {
