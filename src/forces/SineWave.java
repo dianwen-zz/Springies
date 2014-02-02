@@ -1,4 +1,4 @@
-package links;
+package forces;
 
 public final class SineWave {
 	private double maxAmplitude; 

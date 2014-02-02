@@ -1,4 +1,4 @@
-package links;
+package forces;
 
 import org.jbox2d.common.Vec2;
 
@@ -27,11 +27,6 @@ public class Muscle extends Force {
 		return null;
 	}
 
-	@Override
-	void setForce(SuperMass m) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	
 

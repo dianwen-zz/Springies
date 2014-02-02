@@ -12,6 +12,8 @@ import nodes.Mass;
 
 import org.jbox2d.common.Vec2;
 
+import forces.Gravity;
+
 
 @SuppressWarnings("serial")
 public class Springies extends JGEngine
@@ -50,7 +52,8 @@ public class Springies extends JGEngine
         WorldManager.getWorld().setGravity(new Vec2(0.0f, 0.1f));
         addBall();
         addWalls();
-        new Mass("mass", pfWidth()/2, pfHeight()/2, 2);
+        float gravAccel = (float)9.81;
+        new Mass("mass", pfWidth()/2, pfHeight()/2+10, 2, gravAccel);
         new Fixed("fixed", pfWidth()/2, pfHeight()/2);
     }
 
@@ -108,6 +111,7 @@ public class Springies extends JGEngine
     {
         // update game objects
         WorldManager.getWorld().step(1f, 1);
+        
         moveObjects();
         checkCollision(1 + 2, 1);
     }

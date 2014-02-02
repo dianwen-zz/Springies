@@ -1,4 +1,4 @@
-package links;
+package forces;
 import nodes.SuperMass;
 import org.jbox2d.common.Vec2;
 
@@ -19,12 +19,6 @@ public class Spring extends Force{
 	Vec2 calculateForce() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	void setForce(SuperMass m) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

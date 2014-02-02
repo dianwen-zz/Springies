@@ -1,4 +1,4 @@
-package links;
+package forces;
 
 import nodes.SuperMass;
 
@@ -10,12 +10,6 @@ public class CenterOfMass extends Force{
 	Vec2 calculateForce() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	void setForce(SuperMass m) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
