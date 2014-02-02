@@ -1,4 +1,4 @@
-package links;
+package forces;
 
 import jboxGlue.PhysicalObject;
 import jgame.JGObject;
@@ -23,6 +23,7 @@ public class Viscosity extends Force{
 		return null;
 	}
 
+<<<<<<< HEAD:src/links/Viscosity.java
 	@Override
 	Vec2 calculateForce(SuperMass m) {
 		// TODO Auto-generated method stub
@@ -31,4 +32,6 @@ public class Viscosity extends Force{
 
 
 
+=======
+>>>>>>> 3b85ff0c7c1084f1335faab623e12e0b1d536dea:src/forces/Viscosity.java
 }
