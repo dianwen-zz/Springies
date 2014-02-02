@@ -17,8 +17,7 @@ public class Viscosity extends Force{
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	Vec2 calculateForce() {
+	public Vec2 calculateForce() {
 		// TODO Auto-generated method stub
 		return null;
 	}

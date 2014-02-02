@@ -1,9 +1,15 @@
 package forces;
 
+import jgame.JGObject;
 import nodes.SuperMass;
 
 import org.jbox2d.common.Vec2;
 
-public abstract class Force {
-	abstract Vec2 calculateForce();
+public abstract class Force extends JGObject{
+	public Force() {
+		super("ball", true, 0, 0, 0, null);
+		// TODO Auto-generated constructor stub
+	}
+
+	public abstract Vec2 calculateForce();
 }

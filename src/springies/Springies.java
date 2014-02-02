@@ -15,13 +15,16 @@ import nodes.SuperMass;
 
 import org.jbox2d.common.Vec2;
 
+import forces.Force;
 import forces.Gravity;
+import forces.Spring;
 
 
 @SuppressWarnings("serial")
 public class Springies extends JGEngine
 {
 	ArrayList<SuperMass> obj = new ArrayList<SuperMass>();
+	ArrayList<Force> force = new ArrayList<Force>();
     public Springies ()
     {
         // set the window size
@@ -53,12 +56,13 @@ public class Springies extends JGEngine
         // so gravity is up in world coords and down in game coords
         // so set all directions (e.g., forces, velocities) in world coords
         WorldManager.initWorld(this);
-        WorldManager.getWorld().setGravity(new Vec2(0.0f, 0.0f));
-        addBall();
         addWalls();
-        float gravAccel = (float).5;
-        obj.add(new Mass("mass", pfWidth()/2+5, pfHeight()/2-100, 2, gravAccel));
-        obj.add(new Fixed("fixed", pfWidth()/2, pfHeight()/2));
+        float gravAccel = (float)0.7;
+        Mass mass1 = new Mass("mass", 50, 50, 5, gravAccel);
+        Mass mass2 = new Mass("mass", pfWidth()-50, pfHeight()-50, 2, gravAccel);
+        obj.add(mass1);
+        obj.add(mass2);
+        force.add(new Spring(mass1, mass2, 100, .1));
     }
 
     public void addBall ()
@@ -117,6 +121,9 @@ public class Springies extends JGEngine
         WorldManager.getWorld().step(1f, 1);
         for(SuperMass o: obj){
         	o.calculateObjForce();
+        }
+        for(Force f: force){
+        	f.calculateForce();
         }
         
         moveObjects();

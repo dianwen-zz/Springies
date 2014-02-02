@@ -108,6 +108,10 @@ public abstract class PhysicalObject extends JGObject
     {
         myBody.applyForce(new Vec2((float)x, (float)y), myBody.m_xf.position);
     }
+    
+    public Vec2 getPos(){
+    	return myBody.m_xf.position;
+    }
 
     @Override
     public void destroy ()

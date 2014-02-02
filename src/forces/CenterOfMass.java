@@ -6,8 +6,7 @@ import org.jbox2d.common.Vec2;
 
 public class CenterOfMass extends Force{
 
-	@Override
-	Vec2 calculateForce() {
+	public Vec2 calculateForce() {
 		// TODO Auto-generated method stub
 		return null;
 	}

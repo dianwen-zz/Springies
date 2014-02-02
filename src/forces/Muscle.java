@@ -21,10 +21,9 @@ public class Muscle extends Force {
 		wave = new SineWave(amp);
 	}
 
-	@Override
-	Vec2 calculateForce() {
+	public Vec2 calculateForce() {
 		// TODO Auto-generated method stub
 		return null;
-	}
+		}
 
 }

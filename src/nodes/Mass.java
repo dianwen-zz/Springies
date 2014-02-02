@@ -21,29 +21,8 @@ public class Mass extends SuperMass {
 	
 	public void calculateObjForce(){
 		Vec2 gravForce = grav.calculateForce(mass);
-		System.out.println((double)gravForce.x + " " + (double)gravForce.y);
 		this.setForce((double)gravForce.x, (double)gravForce.y);
 		
 	}
 	
-	public void hit (JGObject other){ //follow similar behavior as a bouncing ball
-		//hit something, grab the velocity and dampen it if we hit a wall
-		Vec2 velocity = myBody.getLinearVelocity();
-		final double DAMPING_FACTOR = 0.8;
-		//if it is a wall, we dampen the velocity
-		 boolean isSide = other.getBBox().height > other.getBBox().width;
-         if (isSide) {
-             velocity.x *= -DAMPING_FACTOR;
-         }
-         else {
-             velocity.y *= -DAMPING_FACTOR;
-         }
-         // apply the change
-        myBody.setLinearVelocity(velocity);
-	}
-	 
-	public void setVel(Vec2 v){
-		myBody.setLinearVelocity(v);
-	}
-
 }

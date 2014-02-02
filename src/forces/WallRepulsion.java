@@ -45,4 +45,11 @@ public class WallRepulsion extends Force{
 		
 	}
 
+	@Override
+	public Vec2 calculateForce() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+
 }

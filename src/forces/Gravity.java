@@ -8,6 +8,7 @@ public class Gravity extends Force{
 	float accel;
 	
 	public Gravity(float a){
+		super();
 		accel = a;
 	}
 
@@ -16,7 +17,7 @@ public class Gravity extends Force{
 	}
 
 	@Override
-	Vec2 calculateForce() {
+	public Vec2 calculateForce() {
 		// TODO Auto-generated method stub
 		return null;
 	}
