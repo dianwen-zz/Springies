@@ -23,15 +23,10 @@ public class Viscosity extends Force{
 		return null;
 	}
 
-<<<<<<< HEAD:src/links/Viscosity.java
-	@Override
 	Vec2 calculateForce(SuperMass m) {
 		// TODO Auto-generated method stub
 		return new Vec2(-scale*m.getMass(), -scale*m.getMass());
 	}
 
 
-
-=======
->>>>>>> 3b85ff0c7c1084f1335faab623e12e0b1d536dea:src/forces/Viscosity.java
 }
