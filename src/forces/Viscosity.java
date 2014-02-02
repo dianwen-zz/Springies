@@ -10,21 +10,22 @@ import nodes.SuperMass;
 
 public class Viscosity extends Force{
 
-	private float scale; 
+	private float dampingFactor; 
 	
-	public Viscosity(float scale) {
-		this.scale = scale; 
+	public Viscosity(float dampingFactor) {
+		this.dampingFactor = dampingFactor; 
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
 	public Vec2 calculateForce() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	Vec2 calculateForce(SuperMass m) {
+	public Vec2 calculateForce(float xv, float yv) { //che
 		// TODO Auto-generated method stub
-		return new Vec2(-scale*m.getMass(), -scale*m.getMass());
+		return new Vec2(dampingFactor*xv, -dampingFactor*yv);
 	}
 
 

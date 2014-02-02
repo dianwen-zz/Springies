@@ -33,14 +33,15 @@ public class WallRepulsion extends Force{
 
 	float calculateForceHelper(float magnitude, float exponent, SuperMass m){
 		if(exponent == 2){
-			return magnitude *  
+			//return magnitude *  
 		}
 		return magnitude;
 		
 	}
 	
 	float getDistanceFromWall(int ID, SuperMass m){
-		Body body = m.getBody(); 
+		Body body = m.getBody();
+		return ID; 
 		
 		
 	}
