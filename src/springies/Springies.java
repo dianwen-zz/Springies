@@ -1,6 +1,11 @@
 package springies;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import jboxGlue.PhysicalObject;
 import jboxGlue.PhysicalObjectCircle;
@@ -9,131 +14,216 @@ import jboxGlue.WorldManager;
 import jgame.JGColor;
 import jgame.JGObject;
 import jgame.platform.JGEngine;
-import nodes.Fixed;
 import nodes.Mass;
 import nodes.SuperMass;
 
 import org.jbox2d.common.Vec2;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import forces.Force;
-import forces.Gravity;
 import forces.Spring;
 
 
 @SuppressWarnings("serial")
 public class Springies extends JGEngine
 {
-	ArrayList<SuperMass> obj = new ArrayList<SuperMass>();
-	ArrayList<Force> force = new ArrayList<Force>();
-    public Springies ()
-    {
-        // set the window size
-        int height = 480;
-        double aspect = 16.0 / 9.0;
-        initEngineComponent((int) (height * aspect), height);
-    }
+	static HashMap<String,SuperMass> obj = new HashMap<String,SuperMass>();
+	static ArrayList<Force> force = new ArrayList<Force>();
+	
+	public Springies ()
+	{
+		// set the window size
+		int height = 1000;
+		double aspect = 16.0 / 9.0;
+		initEngineComponent((int) (height * aspect), height);
+	}
 
-    @Override
-    public void initCanvas ()
-    {
-        // I have no idea what tiles do...
-        setCanvasSettings(1, // width of the canvas in tiles
-                          1, // height of the canvas in tiles
-                          displayWidth(), // width of one tile
-                          displayHeight(), // height of one tile
-                          null,// foreground colour -> use default colour white
-                          null,// background colour -> use default colour black
-                          null); // standard font -> use default font
-    }
+	@Override
+	public void initCanvas ()
+	{
+		// I have no idea what tiles do...
+		setCanvasSettings(1, // width of the canvas in tiles
+				1, // height of the canvas in tiles
+				displayWidth(), // width of one tile
+				displayHeight(), // height of one tile
+				null,// foreground colour -> use default colour white
+				null,// background colour -> use default colour black
+				null); // standard font -> use default font
+	}
 
-    @Override
-    public void initGame ()
-    {
-        setFrameRate(60, 2);
-        // NOTE:
-        //   world coordinates have y pointing down
-        //   game coordinates have y pointing up
-        // so gravity is up in world coords and down in game coords
-        // so set all directions (e.g., forces, velocities) in world coords
-        WorldManager.initWorld(this);
-        addWalls();
-        float gravAccel = (float)0.7;
-        Mass mass1 = new Mass("mass", 50, 50, 5, gravAccel);
-        Mass mass2 = new Mass("mass", pfWidth()-50, pfHeight()-50, 2, gravAccel);
-        obj.add(mass1);
-        obj.add(mass2);
-        force.add(new Spring(mass1, mass2, 100, .1));
-    }
+	@Override
+	public void initGame ()
+	{
+		setFrameRate(60, 2);
+		// NOTE:
+		//   world coordinates have y pointing down
+		//   game coordinates have y pointing up
+		// so gravity is up in world coords and down in game coords
+		// so set all directions (e.g., forces, velocities) in world coords
+		WorldManager.initWorld(this);
+		addWalls();
+		chooseFile();
+		System.out.println(pfWidth() + " " + pfHeight());
+	}
 
-    public void addBall ()
-    {
-        // add a bouncy ball
-        // NOTE: you could make this into a separate class, but I'm lazy
-        PhysicalObject ball = new PhysicalObjectCircle("ball", 1, JGColor.blue, 10, 5) {
-            @Override
-            public void hit (JGObject other)
-            {
-                // we hit something! bounce off it!
-                Vec2 velocity = myBody.getLinearVelocity();
-                // is it a tall wall?
-                final double DAMPING_FACTOR = 0.8;
-                boolean isSide = other.getBBox().height > other.getBBox().width;
-                if (isSide) {
-                    velocity.x *= -DAMPING_FACTOR;
-                }
-                else {
-                    velocity.y *= -DAMPING_FACTOR;
-                }
-                // apply the change
-                myBody.setLinearVelocity(velocity);
-            }
-        };
-        ball.setPos(displayWidth() / 2, displayHeight() / 2);
-        ball.setForce(8000, -10000);
-    }
+	private void addWalls ()
+	{
+		// add walls to bounce off of
+		// NOTE: immovable objects must have no mass
+		final double WALL_MARGIN = 10;
+		final double WALL_THICKNESS = 10;
+		final double WALL_WIDTH = displayWidth() - WALL_MARGIN * 2 + WALL_THICKNESS;
+		final double WALL_HEIGHT = displayHeight() - WALL_MARGIN * 2 + WALL_THICKNESS;
+		PhysicalObject wall = new PhysicalObjectRect("wall", 2, JGColor.green,
+				WALL_WIDTH, WALL_THICKNESS);
+		wall.setPos(displayWidth() / 2, WALL_MARGIN);
+		wall = new PhysicalObjectRect("wall", 2, JGColor.green,
+				WALL_WIDTH, WALL_THICKNESS);
+		wall.setPos(displayWidth() / 2, displayHeight() - WALL_MARGIN);
+		wall = new PhysicalObjectRect("wall", 2, JGColor.green,
+				WALL_THICKNESS, WALL_HEIGHT);
+		wall.setPos(WALL_MARGIN, displayHeight() / 2);
+		wall = new PhysicalObjectRect("wall", 2, JGColor.green,
+				WALL_THICKNESS, WALL_HEIGHT);
+		wall.setPos(displayWidth() - WALL_MARGIN, displayHeight() / 2);
+	}
 
-    private void addWalls ()
-    {
-        // add walls to bounce off of
-        // NOTE: immovable objects must have no mass
-        final double WALL_MARGIN = 10;
-        final double WALL_THICKNESS = 10;
-        final double WALL_WIDTH = displayWidth() - WALL_MARGIN * 2 + WALL_THICKNESS;
-        final double WALL_HEIGHT = displayHeight() - WALL_MARGIN * 2 + WALL_THICKNESS;
-        PhysicalObject wall = new PhysicalObjectRect("wall", 2, JGColor.green,
-                                                     WALL_WIDTH, WALL_THICKNESS);
-        wall.setPos(displayWidth() / 2, WALL_MARGIN);
-        wall = new PhysicalObjectRect("wall", 2, JGColor.green,
-                                      WALL_WIDTH, WALL_THICKNESS);
-        wall.setPos(displayWidth() / 2, displayHeight() - WALL_MARGIN);
-        wall = new PhysicalObjectRect("wall", 2, JGColor.green,
-                                      WALL_THICKNESS, WALL_HEIGHT);
-        wall.setPos(WALL_MARGIN, displayHeight() / 2);
-        wall = new PhysicalObjectRect("wall", 2, JGColor.green,
-                                      WALL_THICKNESS, WALL_HEIGHT);
-        wall.setPos(displayWidth() - WALL_MARGIN, displayHeight() / 2);
-    }
+	@Override
+	public void doFrame ()
+	{
+		// update game objects
+		WorldManager.getWorld().step(1f, 1);
+		for(SuperMass o: obj.values()){
+			o.calculateObjForce();
+		}
+		for(Force f: force){
+			f.calculateForce();
+		}
 
-    @Override
-    public void doFrame ()
-    {
-        // update game objects
-        WorldManager.getWorld().step(1f, 1);
-        for(SuperMass o: obj){
-        	o.calculateObjForce();
-        }
-        for(Force f: force){
-        	f.calculateForce();
-        }
-        
-        moveObjects();
-        checkCollision(1 + 2, 1);
-    }
+		moveObjects();
+		checkCollision(1 + 2, 1);
+	}
 
-    @Override
-    public void paintFrame ()
-    {
-        // nothing to do
-        // the objects paint themselves
-    }
+	@Override
+	public void paintFrame ()
+	{
+		// nothing to do
+		// the objects paint themselves
+	}
+
+
+	public static void chooseFile() {
+		final FileChooser fc = new FileChooser();
+		File file = fc.start();
+		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(file);
+			doc.getDocumentElement().normalize();
+
+			System.out.println("root of xml file" + doc.getDocumentElement().getNodeName());
+			System.out.println("==========================");
+
+			//parse nodes
+			NodeList nodes = doc.getElementsByTagName("nodes");
+			//get masses
+			System.out.println("dynamic masses:");
+			NodeList nodeNodes = doc.getElementsByTagName("mass");
+			for( int j = 0; j < nodeNodes.getLength(); j++){
+				Node node = nodeNodes.item(j);
+				System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node) +
+						" vx: " + getNodeAttr("vx", node) + " vy: " + getNodeAttr("vy", node) + " mass: " + getNodeAttr("mass", node));
+
+				float gravAccel = (float)1;
+				float mass = 1;
+				float xv = 0;
+				float yv = 0;
+	
+				if(!(getNodeAttr("mass", node).equals(""))){
+					mass = Float.parseFloat(getNodeAttr("mass", node));
+				}
+				if(!(getNodeAttr("xv", node).equals(""))){
+					xv = Float.parseFloat(getNodeAttr("xv", node));
+				}
+				if(!(getNodeAttr("yv", node).equals(""))){
+					yv = Float.parseFloat(getNodeAttr("yv", node));
+				}
+				float x = Float.parseFloat(getNodeAttr("x", node));
+				float y = Float.parseFloat(getNodeAttr("y", node));
+				String id = getNodeAttr("id", node);
+				System.out.println(mass);
+
+				obj.put(id, new Mass(id, x, y, mass, xv, yv, gravAccel));
+			}
+			System.out.println();
+
+			//get fixed masses
+			System.out.println("fixed masses:");
+			nodeNodes = doc.getElementsByTagName("fixed");
+			for( int j = 0; j < nodeNodes.getLength(); j++){
+				Node node = nodeNodes.item(j);
+				System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node));
+			}
+			System.out.println();
+
+
+
+			//parse links
+			nodes = doc.getElementsByTagName("links");
+			//get springs
+			System.out.println("springs:");
+			nodeNodes = doc.getElementsByTagName("spring");
+			for( int j = 0; j < nodeNodes.getLength(); j++){
+				Node node = nodeNodes.item(j);
+				System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
+						" constant: " + getNodeAttr("constant", node));
+
+				double constant = 1;
+				if(!(getNodeAttr("constant", node).equals(""))){
+					constant = Double.parseDouble(getNodeAttr("constant", node));
+				}
+				Mass a = (Mass) obj.get(getNodeAttr("a", node));
+				Mass b = (Mass) obj.get(getNodeAttr("b", node));
+				float rl = Float.parseFloat(getNodeAttr("restlength", node));
+
+				force.add(new Spring(a, b, rl, constant));
+			}
+			System.out.println();
+
+			//get fixed muscles
+			System.out.println("muscles:");
+			nodeNodes = doc.getElementsByTagName("muscle");
+			for( int j = 0; j < nodeNodes.getLength(); j++){
+				Node node = nodeNodes.item(j);
+				System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
+						" constant: " + getNodeAttr("constant", node) + " amplitude: " + getNodeAttr("amplitude", node));				}
+			System.out.println();
+
+
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private static String getValue(String tag, Element element) {
+		NodeList nodes = element.getElementsByTagName(tag).item(0).getChildNodes();
+		Node node = (Node) nodes.item(0);
+		return node.getNodeValue();
+	}
+
+	protected static String getNodeAttr(String attrName, Node node ) {
+		NamedNodeMap attrs = node.getAttributes();
+		for (int y = 0; y < attrs.getLength(); y++ ) {
+			Node attr = attrs.item(y);
+			if (attr.getNodeName().equalsIgnoreCase(attrName)) {
+				return attr.getNodeValue();
+			}
+		}
+		return "";
+	}
 }

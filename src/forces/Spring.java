@@ -29,9 +29,7 @@ public class Spring extends Force{
 		double theta = Math.abs(Math.atan(Math.abs((locB.y-locA.y)/(locB.x-locA.x))));
 		massA.setForce(constant*(distance-restLength)*Math.cos(theta), constant*(distance-restLength)*Math.sin(theta));
 		massB.setForce(-constant*(distance-restLength)*Math.cos(theta), -constant*(distance-restLength)*Math.sin(theta));
-		
-		System.out.println(-constant*(distance-restLength)*Math.cos(theta));
-		
+				
 		drawSpring();
 		
 		return null;

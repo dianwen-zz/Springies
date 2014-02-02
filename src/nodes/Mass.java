@@ -11,12 +11,12 @@ public class Mass extends SuperMass {
 	private static final JGColor MASS_COLOR = JGColor.red;  
 	private static final int MASS_COLLISION_ID = 0;
 	private Gravity grav;
-
 	
-	public Mass(String id, float x, float y, float mass, float g) {
+	public Mass(String id, float x, float y, float mass, float xv, float yv, float g){
 		// TODO Auto-generated constructor stub
 		super(id, MASS_COLLISION_ID, MASS_COLOR, x, y, mass);
 		grav = new Gravity(g);
+		this.setSpeed(xv, yv);
 	}
 	
 	public void calculateObjForce(){

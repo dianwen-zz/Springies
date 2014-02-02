@@ -1,7 +1,11 @@
 import java.io.File;
+import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import nodes.Mass;
+import nodes.SuperMass;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -9,15 +13,20 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import springies.FileChooser;
+import forces.Spring;
+
 public class DOMParser {
+	
+	static HashMap<String,SuperMass> masses = new HashMap<String,SuperMass>();
 
-	public static void main(String args[]) {
+	public static void chooseFile() {
+		final FileChooser fc = new FileChooser();
+		File file = fc.start();
 		try {
-
-			File stocks = new File("assets/example.xml");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(stocks);
+			Document doc = dBuilder.parse(file);
 			doc.getDocumentElement().normalize();
 
 			System.out.println("root of xml file" + doc.getDocumentElement().getNodeName());
@@ -25,7 +34,6 @@ public class DOMParser {
 
 			//parse nodes
 			NodeList nodes = doc.getElementsByTagName("nodes");
-				System.out.println("total nodes: " + nodes.getLength());
 				//get masses
 				System.out.println("dynamic masses:");
 				NodeList nodeNodes = doc.getElementsByTagName("mass");
@@ -33,6 +41,20 @@ public class DOMParser {
 					Node node = nodeNodes.item(j);
 					System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node) +
 							" vx: " + getNodeAttr("vx", node) + " vy: " + getNodeAttr("vy", node) + " mass: " + getNodeAttr("mass", node));
+					float mass = 1;
+					float xv = 0;
+					float yv = 0;
+					
+					mass = Integer.parseInt(getNodeAttr("mass", node));
+					xv = Integer.parseInt(getNodeAttr("xv", node));
+					yv = Integer.parseInt(getNodeAttr("yv", node));
+					float x = Integer.parseInt(getNodeAttr("x", node));
+					float y = Integer.parseInt(getNodeAttr("y", node));
+					String id = getNodeAttr("id", node);
+					
+			        float gravAccel = (float)0.7;
+
+					masses.put(id, new Mass(id, x, y, mass, xv, yv, gravAccel));
 				}
 				System.out.println();
 
@@ -56,6 +78,13 @@ public class DOMParser {
 					Node node = nodeNodes.item(j);
 					System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
 							" constant: " + getNodeAttr("constant", node));
+					
+					double constant = 1;
+					constant = Integer.parseInt(getNodeAttr("constant", node));
+					Mass a = (Mass) masses.get(getNodeAttr("a", node));
+					Mass b = (Mass) masses.get(getNodeAttr("b", node));
+					float rl = Integer.parseInt(getNodeAttr("restlength", node));
+					new Spring(a, b, rl, 1);
 				}
 				System.out.println();
 
