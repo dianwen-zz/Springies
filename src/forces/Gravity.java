@@ -1,5 +1,7 @@
 package forces;
 
+import nodes.SuperMass;
+
 import org.jbox2d.common.Vec2;
 
 public class Gravity extends Force{

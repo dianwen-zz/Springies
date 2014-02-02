@@ -16,14 +16,7 @@ public class WallRepulsion extends Force{
 		this.magnitude = magnitude;
 		this.exponent = exponent; 
 	}
-	@Override
-	Vec2 calculateForce() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-<<<<<<< HEAD:src/links/WallRepulsion.java
-	@Override
 	Vec2 calculateForce(SuperMass m) {
 		// TODO Auto-generated method stub
 		Vec2 repulsion; 
@@ -52,6 +45,4 @@ public class WallRepulsion extends Force{
 		
 	}
 
-=======
->>>>>>> 3b85ff0c7c1084f1335faab623e12e0b1d536dea:src/forces/WallRepulsion.java
 }

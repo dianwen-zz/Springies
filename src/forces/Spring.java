@@ -21,14 +21,4 @@ public class Spring extends Force{
 		return null;
 	}
 
-<<<<<<< HEAD:src/links/Spring.java
-	@Override
-	Vec2 calculateForce(SuperMass m) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-=======
->>>>>>> 3b85ff0c7c1084f1335faab623e12e0b1d536dea:src/forces/Spring.java
 }
