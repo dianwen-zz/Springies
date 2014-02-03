@@ -25,7 +25,7 @@ public class Mass extends SuperMass {
 		super(id, MASS_COLLISION_ID, MASS_COLOR, x, y, mass);
 		grav = new Gravity(g);
 		visc = new Viscosity((float)0.5);
-		COM = new CenterOfMass((float) 0.5, 1.0);
+		myBody.setLinearVelocity(new Vec2(xv,yv));
 		this.setSpeed(xv, yv);
 		this.xv = xv; 
 		this.yv = yv; 

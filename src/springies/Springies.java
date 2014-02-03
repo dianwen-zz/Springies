@@ -19,7 +19,6 @@ import nodes.Mass;
 import nodes.SuperMass;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -129,7 +128,7 @@ public class Springies extends JGEngine
 
 	public static void chooseFile() {
 		final FileChooser fc = new FileChooser();
-		File file = fc.start();
+		File file = fc.getFile();
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -223,7 +222,7 @@ public class Springies extends JGEngine
 			SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
 			SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
 
-			force.add(new Spring(a, b, rl, constant));
+			force.add(new Spring(a, b, rl,  constant));
 		}
 	}
 
