@@ -25,7 +25,7 @@ public class Viscosity extends Force{
 
 	public Vec2 calculateForce(float xv, float yv) { //che
 		// TODO Auto-generated method stub
-		return new Vec2(dampingFactor*xv, -dampingFactor*yv);
+		return new Vec2(dampingFactor*xv, dampingFactor*yv);
 	}
 
 
