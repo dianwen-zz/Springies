@@ -2,6 +2,8 @@ package nodes;
 
 import org.jbox2d.common.Vec2;
 
+import common.Environment;
+
 import springies.Springies;
 
 import forces.CenterOfMass;
@@ -20,11 +22,12 @@ public class Mass extends SuperMass {
 	private CenterOfMass COM; 
 	private float xv, yv; 
 	
-	public Mass(String id, float x, float y, float mass, float xv, float yv, float g){
+	public Mass(String id, float x, float y, float mass, float xv, float yv, Environment environment){
 		// TODO Auto-generated constructor stub
 		super(id, MASS_COLLISION_ID, MASS_COLOR, x, y, mass);
-		grav = new Gravity(g);
-		visc = new Viscosity((float)0.5);
+		grav = new Gravity(environment.getGravAccel());
+		visc = new Viscosity(environment.getViscosityDampingConstant());
+		COM = new CenterOfMass(environment.getCenterOfMass_Magnitude(), environment.getCenterOfMass_Magnitude());
 		myBody.setLinearVelocity(new Vec2(xv,yv));
 		this.setSpeed(xv, yv);
 		this.xv = xv; 

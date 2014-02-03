@@ -24,6 +24,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import common.Environment;
+
 import forces.CenterOfMass;
 import forces.ComputeWeightedCenter;
 import forces.Force;
@@ -36,7 +38,7 @@ public class Springies extends JGEngine
 	static HashMap<String,SuperMass> obj = new HashMap<String,SuperMass>();
 	static ArrayList<Force> force = new ArrayList<Force>();
 	static ComputeWeightedCenter CWC = new ComputeWeightedCenter();
-	static float gravAccel; 
+	static Environment environment = new Environment();
 
 	public Springies ()
 	{
@@ -173,22 +175,38 @@ public class Springies extends JGEngine
 	}
 
 	public static void buildEnvironment(Document doc){
-		NodeList gravityNode, viscosityNode, centermassNode, wallNodes; 
+		NodeList  wallNodes; 
 		System.out.println("Environment Variables:");
 		//create gravity
 		buildGravity(doc);
 		
-		viscosityNode = doc.getElementsByTagName("viscosity");
+		//create viscosity 
+		buildViscosity(doc);
+			
+		//create centerofmass
+		buildCenterMass(doc);
 		
-		centermassNode = doc.getElementsByTagName("centermass");
+		//build walls
+		wallNodes = doc.getElementsByTagName("wall");	
+	}
+	
+	public static void buildCenterMass(Document doc){
+		NodeList centermassNode;
 		
-		wallNodes = doc.getElementsByTagName("wall");
+		centermassNode = doc.getElementsByTagName("centermass"); 
+		
+		if(!(getNodeAttr("exponent", centermassNode.item(0)).equals(""))){
+			environment.setCenterOfMass_Exponent(Float.parseFloat(getNodeAttr("exponent", centermassNode.item(0))));			
+		}
+		if(!(getNodeAttr("magnitude", centermassNode.item(0)).equals(""))){
+			environment.setCenterOfMass_Magnitude(Float.parseFloat(getNodeAttr("magnitude", centermassNode.item(0))));
+		}		
 		
 	}
 	
 	public static void buildGravity(Document doc){
 		NodeList gravityNode;
-		//create gravity
+
 		gravityNode = doc.getElementsByTagName("gravity");
 		
 		float direction = (float) 0;
@@ -202,9 +220,19 @@ public class Springies extends JGEngine
 			magnitude = Float.parseFloat(getNodeAttr("magnitude", gravityNode.item(0)));
 		}
 		
-		gravAccel = (float) (magnitude*Math.sin(direction));
-		System.out.println("gravAccel: "+gravAccel);
+		environment.setGravAccel((float) (magnitude*Math.sin(direction)));
 	}
+	
+	public static void buildViscosity(Document doc){
+		NodeList viscosityNode; 
+		
+		viscosityNode = doc.getElementsByTagName("viscosity");
+		
+		if(!(getNodeAttr("magnitude", viscosityNode.item(0)).equals(""))){
+			environment.setViscosityDampingConstant(Float.parseFloat(getNodeAttr("magnitude", viscosityNode.item(0))));
+		}		
+	}
+	
 	public static void buildMuscles(Document doc) {
 		NodeList nodeNodes;
 		System.out.println("muscles:");
@@ -280,7 +308,7 @@ public class Springies extends JGEngine
 			String id = getNodeAttr("id", node);
 			System.out.println(mass);
 
-			obj.put(id, new Mass(id, x, y, mass, xv, yv, gravAccel));
+			obj.put(id, new Mass(id, x, y, mass, xv, yv, environment));
 		}
 	}
 
