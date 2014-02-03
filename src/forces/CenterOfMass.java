@@ -13,9 +13,10 @@ public final class CenterOfMass extends Force{
 	private double exponent;
 	private JGPoint GlobalCenter; 
 	
-	public CenterOfMass(float magnitude, double exponent){
+	public CenterOfMass(float magnitude, double exponent, JGPoint GlobalCenter){
 		this.magnitude = magnitude; 
 		this.exponent = exponent;
+		this.GlobalCenter = GlobalCenter;
 	}
 		
 	public Vec2 calculateForce() {
@@ -25,13 +26,15 @@ public final class CenterOfMass extends Force{
 
 	public Vec2 calculateForce(float mass, double x, double y) {
 		// TODO Auto-generated method stub
-		float X = (float) ((GlobalCenter.x-x)*(GlobalCenter.x-x));
-		float Y = (float) ((GlobalCenter.y-y)*(GlobalCenter.y-y));
+		System.out.println("GlobalCenter: "+GlobalCenter);
+		float X = (float) (GlobalCenter.x-x);
+		float Y = (float) (GlobalCenter.y-y);
 		
-		if(exponent == 2.0){
-			return new Vec2(magnitude*(1/X)*X, magnitude*(1/Y)*Y);
+		Vec2 COMForce = new Vec2(X,Y).mul(magnitude);; 
+		if(exponent == 2.0){		
+			return COMForce.mul(1/(COMForce.length()*COMForce.length()));
 		}
-		return new Vec2(magnitude*X, magnitude*Y);
+		return COMForce.mul(COMForce.length()*COMForce.length());
 	}
 	
 	public void setGlobalCenter(JGPoint point){

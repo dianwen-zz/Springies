@@ -22,12 +22,15 @@ public class Mass extends SuperMass {
 	private CenterOfMass COM; 
 	private float xv, yv; 
 	
-	public Mass(String id, float x, float y, float mass, float xv, float yv, Environment environment){
-		// TODO Auto-generated constructor stub
+	public Mass(String id, float x, float y, float mass, float xv, float yv, 
+			float gravAccel, float viscosityDampingConstant, float centerOfMass_Magnitude,
+			float centerOfMass_Exponent, JGPoint GlobalCenter){
+
+		
 		super(id, MASS_COLLISION_ID, MASS_COLOR, x, y, mass);
-		grav = new Gravity(environment.getGravAccel());
-		visc = new Viscosity(environment.getViscosityDampingConstant());
-		COM = new CenterOfMass(environment.getCenterOfMass_Magnitude(), environment.getCenterOfMass_Magnitude());
+		grav = new Gravity(gravAccel);
+		visc = new Viscosity(viscosityDampingConstant);
+		COM = new CenterOfMass(centerOfMass_Magnitude, centerOfMass_Magnitude, GlobalCenter);
 		myBody.setLinearVelocity(new Vec2(xv,yv));
 		this.setSpeed(xv, yv);
 		this.xv = xv; 
@@ -37,7 +40,7 @@ public class Mass extends SuperMass {
 	public void calculateObjForce(){
 		Vec2 gravForce = grav.calculateForce(mass);
 		Vec2 viscForce = visc.calculateForce(this.xv, this.yv);
-		//Vec2 COMForce = COM.calculateForce(this.mass, this.getLastX(), this.getLastY());
+		Vec2 COMForce = COM.calculateForce(this.mass, this.getLastX(), this.getLastY());
 		this.setForce((double)gravForce.x, (double)gravForce.y);
 		this.setForce((double)viscForce.x, (double)viscForce.y);
 		//this.setForce((double)COMForce.x, (double)COMForce.y);

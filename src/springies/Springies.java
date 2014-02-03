@@ -13,6 +13,7 @@ import jboxGlue.PhysicalObject;
 import jboxGlue.PhysicalObjectRect;
 import jboxGlue.WorldManager;
 import jgame.JGColor;
+import jgame.JGPoint;
 import jgame.platform.JGEngine;
 import nodes.Fixed;
 import nodes.Mass;
@@ -24,10 +25,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import common.ComputeWeightedCenter;
 import common.Environment;
 
 import forces.CenterOfMass;
-import forces.ComputeWeightedCenter;
 import forces.Force;
 import forces.Spring;
 
@@ -43,9 +44,11 @@ public class Springies extends JGEngine
 	public Springies ()
 	{
 		// set the window size
-		int height = 1000;
+		int height = 500;
 		double aspect = 16.0 / 9.0;
 		initEngineComponent((int) (height * aspect), height);
+		JGPoint center = new JGPoint(height/2, height/2);
+		environment.setGlobalCenter(center);
 	}
 
 	@Override
@@ -111,15 +114,18 @@ public class Springies extends JGEngine
 		for(Force f: force){
 			f.calculateForce();
 		}
-		/*
+	
 		for(SuperMass o: obj.values()){
 			CWC.collectCenters(o.x, o.y, o.getMass());
 		}
+		environment.setGlobalCenter(CWC.computeGlobalCenter()); 
+		/*
 		for(SuperMass o: obj.values()){
 			((Mass) o).setGlobalCenter(CWC.computeGlobalCenter());
 		}*/
 		moveObjects();
 		checkCollision(1 + 2, 1);
+		CWC.clearList();
 	}
 
 	@Override
@@ -308,7 +314,9 @@ public class Springies extends JGEngine
 			String id = getNodeAttr("id", node);
 			System.out.println(mass);
 
-			obj.put(id, new Mass(id, x, y, mass, xv, yv, environment));
+			obj.put(id, new Mass(id, x, y, mass, xv, yv, environment.getGravAccel(), 
+					environment.getViscosityDampingConstant(), environment.getCenterOfMass_Magnitude(), 
+					environment.getCenterOfMass_Exponent(), environment.getGlobalCenter()));
 		}
 	}
 
