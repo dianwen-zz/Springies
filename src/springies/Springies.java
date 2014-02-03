@@ -31,6 +31,7 @@ import common.wall;
 
 import forces.CenterOfMass;
 import forces.Force;
+import forces.Muscle;
 import forces.Spring;
 
 
@@ -110,20 +111,14 @@ public class Springies extends JGEngine
 			 
 		for(SuperMass o: obj.values()){
 			o.calculateObjForce();
+			CWC.collectCenters(o.x, o.y, o.getMass());
 		} 
+		environment.setGlobalCenter(CWC.computeGlobalCenter());
 		
 		for(Force f: force){
 			f.calculateForce();
 		}
-	
-		for(SuperMass o: obj.values()){
-			CWC.collectCenters(o.x, o.y, o.getMass());
-		}
-		environment.setGlobalCenter(CWC.computeGlobalCenter()); 
-		/*
-		for(SuperMass o: obj.values()){
-			((Mass) o).setGlobalCenter(CWC.computeGlobalCenter());
-		}*/
+		 
 		moveObjects();
 		checkCollision(1 + 2, 1);
 		CWC.clearList();
@@ -260,7 +255,7 @@ public class Springies extends JGEngine
 			environment.setViscosityDampingConstant(Float.parseFloat(getNodeAttr("magnitude", viscosityNode.item(0))));
 		}		
 	}
-	
+
 	public static void buildMuscles(Document doc) {
 		NodeList nodeNodes;
 		System.out.println("muscles:");
@@ -268,7 +263,20 @@ public class Springies extends JGEngine
 		for( int j = 0; j < nodeNodes.getLength(); j++){
 			Node node = nodeNodes.item(j);
 			System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
-					" constant: " + getNodeAttr("constant", node) + " amplitude: " + getNodeAttr("amplitude", node));				}
+					" constant: " + getNodeAttr("constant", node));	
+
+			float constant = (float) 1;
+			if(!(getNodeAttr("constant", node).equals(""))){
+				constant = (float) Double.parseDouble(getNodeAttr("constant", node));
+			}
+			float rl = 50;
+			if(!(getNodeAttr("restlength", node).equals(""))){
+				rl = Float.parseFloat(getNodeAttr("restlength", node));
+			}
+			SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
+			SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
+			force.add(new Muscle(a, b, rl,  constant, (float)1.0, (float) 1.0, (float)1.0));
+		}
 	}
 
 	public static void buildSprings(Document doc) {

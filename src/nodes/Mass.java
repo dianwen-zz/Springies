@@ -54,7 +54,6 @@ public class Mass extends SuperMass {
 		Vec2 COMForce = COM.calculateForce(this.mass, this.getLastX(), this.getLastY());
 		Vec2 wallForce1, wallForce2, wallForce3, wallForce4;
 		for(wall w: walls){
-			System.out.println(w);
 			wallForces.add(WallRepulsion.calculateForce(w.getId(), w.getMagnitude(), w.getExponent(),
 					mass, (float)this.getLastX(), (float) this.getLastY()));
 		}
@@ -63,7 +62,6 @@ public class Mass extends SuperMass {
 		this.setForce((double)viscForce.x, (double)viscForce.y);
 		//this.setForce((double)COMForce.x, (double)COMForce.y);
 		for(Vec2 wallForce: wallForces){
-			System.out.println(wallForce);
 			this.setForce((double)wallForce.x, (double)wallForce.y);
 		}
 		wallForces.clear();
