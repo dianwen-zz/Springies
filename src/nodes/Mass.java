@@ -60,7 +60,7 @@ public class Mass extends SuperMass {
 		walls.clear();
 		this.setForce((double)gravForce.x, (double)gravForce.y);
 		this.setForce((double)viscForce.x, (double)viscForce.y);
-		//this.setForce((double)COMForce.x, (double)COMForce.y);
+		this.setForce((double)COMForce.x, (double)COMForce.y);
 		for(Vec2 wallForce: wallForces){
 			this.setForce((double)wallForce.x, (double)wallForce.y);
 		}

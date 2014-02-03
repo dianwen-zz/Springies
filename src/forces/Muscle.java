@@ -29,16 +29,19 @@ public class Muscle extends Force {
 		// TODO Auto-generated method stub
 		Vec2 locA = massA.getPos();
 		Vec2 locB = massB.getPos();
-		if(length <= restLength)
-			length = length*(1+wave.getAmplitude());
-		else 
-			length = length/2;
-		
-		System.out.println("length "+length);
 		double distance = findDistance(locA,locB);
-		massA.setForce(length/distance, length/distance);
-		massB.setForce(length/distance, length/distance);
-		
+		if(length <= restLength){
+			length = length*(1+wave.getAmplitude());
+			massA.setForce(length/distance, length/distance);
+			massB.setForce(length/distance, length/distance);
+		}
+		else{ 
+			length = length/2;
+			massA.setForce(-length/distance, -length/distance);
+			massB.setForce(-length/distance, -length/distance);
+		}
+		System.out.println("length "+length);
+	
 		return null;
 	}
 
