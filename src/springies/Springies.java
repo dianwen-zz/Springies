@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 
 import common.ComputeWeightedCenter;
 import common.Environment;
+import common.wall;
 
 import forces.CenterOfMass;
 import forces.Force;
@@ -180,8 +181,7 @@ public class Springies extends JGEngine
 		
 	}
 
-	public static void buildEnvironment(Document doc){
-		NodeList  wallNodes; 
+	public static void buildEnvironment(Document doc){ 
 		System.out.println("Environment Variables:");
 		//create gravity
 		buildGravity(doc);
@@ -193,9 +193,31 @@ public class Springies extends JGEngine
 		buildCenterMass(doc);
 		
 		//build walls
-		wallNodes = doc.getElementsByTagName("wall");	
+		buildWalls(doc);
 	}
 	
+	public static void buildWalls(Document doc){
+		NodeList wallNodes; 
+		
+		wallNodes = doc.getElementsByTagName("wall");	
+		int id = 0; 
+		float magnitude = (float)0;
+		float exponent = (float)0;
+		
+		for(int i=0; i<wallNodes.getLength(); i++){
+			if(!(getNodeAttr("id", wallNodes.item(i)).equals(""))){
+				id = Integer.parseInt(getNodeAttr("id", wallNodes.item(i)));
+			}
+			if(!(getNodeAttr("magnitude", wallNodes.item(i)).equals(""))){
+				magnitude = Float.parseFloat(getNodeAttr("magnitude", wallNodes.item(i)));	
+			}
+			if(!(getNodeAttr("exponent", wallNodes.item(i)).equals(""))){
+				exponent = Float.parseFloat(getNodeAttr("exponent", wallNodes.item(i)));
+			}
+			environment.setWall(id, magnitude, exponent);
+		}
+
+	}
 	public static void buildCenterMass(Document doc){
 		NodeList centermassNode;
 		
@@ -316,7 +338,7 @@ public class Springies extends JGEngine
 
 			obj.put(id, new Mass(id, x, y, mass, xv, yv, environment.getGravAccel(), 
 					environment.getViscosityDampingConstant(), environment.getCenterOfMass_Magnitude(), 
-					environment.getCenterOfMass_Exponent(), environment.getGlobalCenter()));
+					environment.getCenterOfMass_Exponent(), environment.getGlobalCenter(), environment.getAllWalls()));
 		}
 	}
 

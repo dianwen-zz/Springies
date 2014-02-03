@@ -26,7 +26,6 @@ public final class CenterOfMass extends Force{
 
 	public Vec2 calculateForce(float mass, double x, double y) {
 		// TODO Auto-generated method stub
-		System.out.println("GlobalCenter: "+GlobalCenter);
 		float X = (float) (GlobalCenter.x-x);
 		float Y = (float) (GlobalCenter.y-y);
 		
