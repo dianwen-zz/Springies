@@ -244,6 +244,7 @@ public class Springies extends JGEngine
 		}
 		
 		environment.setGravAccel((float) (magnitude*Math.sin(direction)));
+		System.out.println("gravity " + environment.getGravAccel());
 	}
 	
 	public static void buildViscosity(Document doc){

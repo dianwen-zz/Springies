@@ -31,9 +31,9 @@ public final class CenterOfMass extends Force{
 		
 		Vec2 COMForce = new Vec2(X,Y); 
 		if(exponent == 2.0){		
-			return COMForce.mul(1/(COMForce.length()*COMForce.length()));
+			return COMForce.mul(magnitude).mul(1/(COMForce.length()*COMForce.length()));
 		}
-		return COMForce.mul(COMForce.length());
+		return COMForce.mul(COMForce.length()).mul(magnitude);
 	}
 	
 	public void setGlobalCenter(JGPoint point){
