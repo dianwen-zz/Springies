@@ -1,11 +1,13 @@
 package springies;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import jboxGlue.PhysicalObject;
 import jboxGlue.PhysicalObjectRect;
@@ -21,7 +23,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import forces.CenterOfMass;
+import forces.ComputeWeightedCenter;
 import forces.Force;
 import forces.Spring;
 
@@ -31,6 +36,7 @@ public class Springies extends JGEngine
 {
 	static HashMap<String,SuperMass> obj = new HashMap<String,SuperMass>();
 	static ArrayList<Force> force = new ArrayList<Force>();
+	static ComputeWeightedCenter CWC = new ComputeWeightedCenter();
 
 	public Springies ()
 	{
@@ -95,13 +101,21 @@ public class Springies extends JGEngine
 	{
 		// update game objects
 		WorldManager.getWorld().step(1f, 1);
+			 
 		for(SuperMass o: obj.values()){
 			o.calculateObjForce();
-		}
+		} 
+		
 		for(Force f: force){
 			f.calculateForce();
 		}
-
+		/*
+		for(SuperMass o: obj.values()){
+			CWC.collectCenters(o.x, o.y, o.getMass());
+		}
+		for(SuperMass o: obj.values()){
+			((Mass) o).setGlobalCenter(CWC.computeGlobalCenter());
+		}*/
 		moveObjects();
 		checkCollision(1 + 2, 1);
 	}
@@ -140,8 +154,45 @@ public class Springies extends JGEngine
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		final FileChooser fc1 = new FileChooser();
+		File file1 = fc1.start(); 
+		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(file1);
+			doc.getDocumentElement().normalize();
+
+			System.out.println("root of xml file" + doc.getDocumentElement().getNodeName());
+			System.out.println("==========================");
+			readEnvironmentVariables(doc);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 	}
 
+	public static void readEnvironmentVariables(Document doc){
+		NodeList gravityNode, viscosityNode, centermassNode, wallNodes; 
+		System.out.println("Environment Variables:");
+		gravityNode = doc.getElementsByTagName("gravity");
+		System.out.println("Gravity:");
+		System.out.println("direction: " + getNodeAttr("direction", gravityNode.item(0)) 
+				+ " magnitude: " + getNodeAttr("magnitude", gravityNode.item(0)));						
+		viscosityNode = doc.getElementsByTagName("viscosity");
+		System.out.println("Viscosity:");
+		System.out.println("magnitude: " + getNodeAttr("magnitude", viscosityNode.item(0)));
+		centermassNode = doc.getElementsByTagName("centermass");
+		System.out.println("CenterMass:");
+		System.out.println("magnitude: " + getNodeAttr("magnitude", centermassNode.item(0)) 
+				+ " exponent: " + getNodeAttr("exponent", centermassNode.item(0)));
+		wallNodes = doc.getElementsByTagName("wall");
+		System.out.println("Walls:");
+		for(int i=0; i<wallNodes.getLength(); i++){
+			System.out.println("id: " + getNodeAttr("id", wallNodes.item(i)) 
+				+  " magnitude: " + getNodeAttr("magnitude", wallNodes.item(i))
+				+  " exponent: " + getNodeAttr("exponent", wallNodes.item(i)));
+		}
+	}
 	public static void buildMuscles(Document doc) {
 		NodeList nodeNodes;
 		System.out.println("muscles:");

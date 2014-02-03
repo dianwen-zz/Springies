@@ -31,7 +31,7 @@ public class WallRepulsion extends Force{
 		return repulsion; 
 	}
 
-	float calculateForceHelper(float magnitude, float exponent, SuperMass m){
+	float calculateForceHelper(float magnitude, float exponent){
 		if(exponent == 2){
 			//return magnitude *  
 		}

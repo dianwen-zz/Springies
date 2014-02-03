@@ -2,10 +2,14 @@ package nodes;
 
 import org.jbox2d.common.Vec2;
 
+import springies.Springies;
+
+import forces.CenterOfMass;
 import forces.Gravity;
 import forces.Viscosity;
 import jgame.JGColor;
 import jgame.JGObject;
+import jgame.JGPoint;
 
 public class Mass extends SuperMass {
 	
@@ -13,6 +17,7 @@ public class Mass extends SuperMass {
 	private static final int MASS_COLLISION_ID = 0;
 	private Gravity grav;
 	private Viscosity visc;
+	private CenterOfMass COM; 
 	private float xv, yv; 
 	
 	public Mass(String id, float x, float y, float mass, float xv, float yv, float g){
@@ -20,6 +25,7 @@ public class Mass extends SuperMass {
 		super(id, MASS_COLLISION_ID, MASS_COLOR, x, y, mass);
 		grav = new Gravity(g);
 		visc = new Viscosity((float)0.5);
+		COM = new CenterOfMass((float) 0.5, 1.0);
 		this.setSpeed(xv, yv);
 		this.xv = xv; 
 		this.yv = yv; 
@@ -28,8 +34,13 @@ public class Mass extends SuperMass {
 	public void calculateObjForce(){
 		Vec2 gravForce = grav.calculateForce(mass);
 		Vec2 viscForce = visc.calculateForce(this.xv, this.yv);
+		//Vec2 COMForce = COM.calculateForce(this.mass, this.getLastX(), this.getLastY());
 		this.setForce((double)gravForce.x, (double)gravForce.y);
 		this.setForce((double)viscForce.x, (double)viscForce.y);
+		//this.setForce((double)COMForce.x, (double)COMForce.y);
 	}
 	
+	public void setGlobalCenter(JGPoint point){
+		COM.setGlobalCenter(point);
+	}
 }
