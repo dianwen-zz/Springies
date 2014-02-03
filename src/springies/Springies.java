@@ -274,9 +274,13 @@ public class Springies extends JGEngine
 			if(!(getNodeAttr("restlength", node).equals(""))){
 				rl = Float.parseFloat(getNodeAttr("restlength", node));
 			}
+			float amp = 1;
+			if(!(getNodeAttr("restlength", node).equals(""))){
+				amp = Float.parseFloat(getNodeAttr("restlength", node));
+			}
 			SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
 			SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
-			force.add(new Muscle(a, b, rl,  constant, (float)1.0, (float) 1.0, (float)1.0));
+			force.add(new Muscle(a, b, rl,  constant,amp));
 		}
 	}
 
