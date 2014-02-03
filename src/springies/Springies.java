@@ -36,6 +36,7 @@ public class Springies extends JGEngine
 	static HashMap<String,SuperMass> obj = new HashMap<String,SuperMass>();
 	static ArrayList<Force> force = new ArrayList<Force>();
 	static ComputeWeightedCenter CWC = new ComputeWeightedCenter();
+	static float gravAccel; 
 
 	public Springies ()
 	{
@@ -128,6 +129,21 @@ public class Springies extends JGEngine
 
 	public static void chooseFile() {
 		final FileChooser fc = new FileChooser();
+		File file1 = fc.getFile(); 
+		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(file1);
+			doc.getDocumentElement().normalize();
+
+			System.out.println("root of xml file" + doc.getDocumentElement().getNodeName());
+			System.out.println("==========================");
+			buildEnvironment(doc);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
 		File file = fc.getFile();
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -153,44 +169,41 @@ public class Springies extends JGEngine
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		final FileChooser fc1 = new FileChooser();
-		File file1 = fc1.start(); 
-		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(file1);
-			doc.getDocumentElement().normalize();
-
-			System.out.println("root of xml file" + doc.getDocumentElement().getNodeName());
-			System.out.println("==========================");
-			readEnvironmentVariables(doc);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+		
 	}
 
-	public static void readEnvironmentVariables(Document doc){
+	public static void buildEnvironment(Document doc){
 		NodeList gravityNode, viscosityNode, centermassNode, wallNodes; 
 		System.out.println("Environment Variables:");
-		gravityNode = doc.getElementsByTagName("gravity");
-		System.out.println("Gravity:");
-		System.out.println("direction: " + getNodeAttr("direction", gravityNode.item(0)) 
-				+ " magnitude: " + getNodeAttr("magnitude", gravityNode.item(0)));						
+		//create gravity
+		buildGravity(doc);
+		
 		viscosityNode = doc.getElementsByTagName("viscosity");
-		System.out.println("Viscosity:");
-		System.out.println("magnitude: " + getNodeAttr("magnitude", viscosityNode.item(0)));
+		
 		centermassNode = doc.getElementsByTagName("centermass");
-		System.out.println("CenterMass:");
-		System.out.println("magnitude: " + getNodeAttr("magnitude", centermassNode.item(0)) 
-				+ " exponent: " + getNodeAttr("exponent", centermassNode.item(0)));
+		
 		wallNodes = doc.getElementsByTagName("wall");
-		System.out.println("Walls:");
-		for(int i=0; i<wallNodes.getLength(); i++){
-			System.out.println("id: " + getNodeAttr("id", wallNodes.item(i)) 
-				+  " magnitude: " + getNodeAttr("magnitude", wallNodes.item(i))
-				+  " exponent: " + getNodeAttr("exponent", wallNodes.item(i)));
+		
+	}
+	
+	public static void buildGravity(Document doc){
+		NodeList gravityNode;
+		//create gravity
+		gravityNode = doc.getElementsByTagName("gravity");
+		
+		float direction = (float) 0;
+		float magnitude = (float) 0;  
+		
+		
+		if(!(getNodeAttr("direction", gravityNode.item(0)).equals(""))){
+			direction = Float.parseFloat(getNodeAttr("direction", gravityNode.item(0)));			
 		}
+		if(!(getNodeAttr("magnitude", gravityNode.item(0)).equals(""))){
+			magnitude = Float.parseFloat(getNodeAttr("magnitude", gravityNode.item(0)));
+		}
+		
+		gravAccel = (float) (magnitude*Math.sin(direction));
+		System.out.println("gravAccel: "+gravAccel);
 	}
 	public static void buildMuscles(Document doc) {
 		NodeList nodeNodes;
@@ -249,7 +262,6 @@ public class Springies extends JGEngine
 			System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node) +
 					" vx: " + getNodeAttr("vx", node) + " vy: " + getNodeAttr("vy", node) + " mass: " + getNodeAttr("mass", node));
 
-			float gravAccel = (float)1;
 			float mass = 1;
 			float xv = 0;
 			float yv = 0;

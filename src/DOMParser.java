@@ -22,7 +22,7 @@ public class DOMParser {
 
 	public static void chooseFile() {
 		final FileChooser fc = new FileChooser();
-		File file = fc.start();
+		File file = fc.getFile();
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
