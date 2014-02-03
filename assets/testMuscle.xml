@@ -1,0 +1,9 @@
+<model>
+<nodes>       
+	   <mass id="m1" x="20" y="20"/>
+        <mass id="m2" x="200" y="20"/>
+		</nodes>
+		<muscle a="m1" b="m2" restlength="180" constant="0.5" amplitude = "0.5"/>
+		<links>
+		</links>
+		</model>
