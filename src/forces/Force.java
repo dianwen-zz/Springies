@@ -7,7 +7,7 @@ import org.jbox2d.common.Vec2;
 
 public abstract class Force extends JGObject{
 	public Force() {
-		super("ball", true, 0, 0, 0, null);
+		super("force", true, 0, 0, 0, null);
 		// TODO Auto-generated constructor stub
 	}
 
