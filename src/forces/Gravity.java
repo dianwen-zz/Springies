@@ -1,25 +1,23 @@
 package forces;
-
-import nodes.SuperMass;
+import java.util.ArrayList;
 
 import org.jbox2d.common.Vec2;
 
+import nodes.SuperMass;
+
 public class Gravity extends Force{
-	float accel;
+	float magnitude;
+	ArrayList<SuperMass> masses;
 	
-	public Gravity(float a){
-		super();
-		accel = a;
+	public Gravity(float accel, ArrayList<SuperMass> m){
+		magnitude = accel;
+		masses = m;
 	}
 
-	public Vec2 calculateForce(float mass) {
-		return new Vec2(0,mass*accel);
-	}
-
-	@Override
-	public Vec2 calculateForce() {
-		// TODO Auto-generated method stub
-		return null;
+	public void calculateForce() {
+		for(SuperMass m: masses){
+			m.setForce(0, m.getMass()*magnitude);
+		}
 	}
 	
 }

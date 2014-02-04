@@ -1,32 +1,24 @@
 package forces;
-
-import jboxGlue.PhysicalObject;
-import jgame.JGObject;
+import java.util.ArrayList;
 
 import org.jbox2d.common.Vec2;
 
-import nodes.Mass;
 import nodes.SuperMass;
 
 public class Viscosity extends Force{
-
-	private float dampingFactor; 
+	float magnitude;
+	ArrayList<SuperMass> masses;
 	
-	public Viscosity(float dampingFactor) {
-		this.dampingFactor = dampingFactor; 
-		// TODO Auto-generated constructor stub
+	public Viscosity(float visc, ArrayList<SuperMass> m){
+		magnitude = visc;
+		masses = m;
 	}
-
-	@Override
-	public Vec2 calculateForce() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public void calculateForce() {
+		for(SuperMass m: masses){
+			Vec2 viscForce = m.getBody().getLinearVelocity().mul(-magnitude);
+			m.setForce(viscForce.x, viscForce.y);
+		}
 	}
-
-	public Vec2 calculateForce(float xv, float yv) { //che
-		// TODO Auto-generated method stub
-		return new Vec2(dampingFactor*xv, dampingFactor*yv);
-	}
-
 
 }

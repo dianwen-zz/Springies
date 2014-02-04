@@ -2,46 +2,47 @@ package forces;
 
 import java.util.ArrayList;
 
-import jgame.JGPoint;
-import nodes.SuperMass;
-
 import org.jbox2d.common.Vec2;
 
-public final class CenterOfMass extends Force{
+import nodes.SuperMass;
+
+public class CenterOfMass extends Force{
+	float magnitude;
+	float exponent;
+	ArrayList<SuperMass> masses;
 	
-	private float magnitude; 
-	private double exponent;
-	private JGPoint GlobalCenter; 
-	
-	public CenterOfMass(float magnitude, double exponent, JGPoint GlobalCenter){
-		this.magnitude = magnitude; 
-		this.exponent = exponent;
-		this.GlobalCenter = GlobalCenter;
-	}
-		
-	public Vec2 calculateForce() {
-		// TODO Auto-generated method stub
-		return null;
+	public CenterOfMass(float cOmMag, float cOmExp, ArrayList<SuperMass> m){
+		magnitude = cOmMag;
+		exponent = cOmExp;
+		masses = m;
 	}
 
-	public Vec2 calculateForce(float mass, double x, double y) {
-		// TODO Auto-generated method stub
-		float X = (float) (GlobalCenter.x-x);
-		float Y = (float) (GlobalCenter.y-y);
+	@Override
+	public void calculateForce() {
+		Vec2 center = calculateCenter();
 		
-		Vec2 COMForce = new Vec2(X,Y); 
-		if(exponent == 2.0){		
-			return COMForce.mul(magnitude).mul(1/(COMForce.length()*COMForce.length()));
+		for(SuperMass m: masses){
+			//Vec2 displacement = center.sub(m.getBody().getWorldCenter());
+			Vec2 displacement = center.sub(m.getPos());
+			Vec2 cOmForce = displacement.mul((float) (magnitude/Math.pow(displacement.length(),exponent)));
+			
+			m.setForce(cOmForce.x, cOmForce.y);
 		}
-		return COMForce.mul(COMForce.length()).mul(magnitude);
 	}
 	
-	public void setGlobalCenter(JGPoint point){
-		GlobalCenter = point; 
+	public Vec2 calculateCenter(){
+		float totalMass = 0;
+		float weightedXLoc = 0; //Summation of m_i*x_i, where m_i is the mass of a mass, and x_i is its x coordinate
+		float weightedYLoc = 0;
+		
+		for(SuperMass m: masses){
+			weightedXLoc += (float) (m.getMass()*m.x);
+			weightedYLoc += (float) (m.getMass()*m.y);
+			totalMass += m.getMass();
+		}
+		
+		return new Vec2(weightedXLoc/totalMass, weightedYLoc/totalMass);
 	}
 	
-	
-	
-
 
 }

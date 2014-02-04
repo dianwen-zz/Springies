@@ -11,5 +11,5 @@ public abstract class Force extends JGObject{
 		// TODO Auto-generated constructor stub
 	}
 
-	public abstract Vec2 calculateForce();
+	public abstract void calculateForce();
 }

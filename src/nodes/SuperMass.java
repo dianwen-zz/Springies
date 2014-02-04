@@ -9,16 +9,12 @@ import forces.Gravity;
 import jgame.JGColor;
 
 public abstract class SuperMass extends PhysicalObject{
-
-	protected float mass; 
-
-	private static final int RADIUS = 3;
+	protected float mass;
+	private static final int RADIUS = 5;
 	
 	public SuperMass(String id, int COLLISION_ID, JGColor color, float xpos, float ypos, float m) {
 		// TODO Auto-generated constructor stub	
-		super(id, COLLISION_ID, color);
-		mass = m;
-		
+		super(id, COLLISION_ID, color);		
 		init(xpos,ypos,m,0);
 	}
 	
@@ -34,21 +30,14 @@ public abstract class SuperMass extends PhysicalObject{
 		this.setForce(0, 0);
 	}
 	
-	
-
-	public float getMass(){
-		return mass; 
-	}
     @Override
     public void paintShape ()
     {
         myEngine.setColor(myColor);
         myEngine.drawOval(x, y, (float)RADIUS * 2, (float)RADIUS * 2, true, true);
     }
-
-	public abstract void calculateObjForce();
-
-
-
-
+    
+    public float getMass(){
+    	return mass;
+    }
 }

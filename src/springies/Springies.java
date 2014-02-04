@@ -1,19 +1,16 @@
 package springies;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import jboxGlue.PhysicalObject;
 import jboxGlue.PhysicalObjectRect;
 import jboxGlue.WorldManager;
 import jgame.JGColor;
-import jgame.JGPoint;
 import jgame.platform.JGEngine;
 import nodes.Fixed;
 import nodes.Mass;
@@ -23,34 +20,27 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import common.ComputeWeightedCenter;
-import common.Environment;
-import common.wall;
 
 import forces.CenterOfMass;
 import forces.Force;
+import forces.Gravity;
 import forces.Muscle;
 import forces.Spring;
+import forces.Viscosity;
 
 
 @SuppressWarnings("serial")
 public class Springies extends JGEngine
 {
-	static HashMap<String,SuperMass> obj = new HashMap<String,SuperMass>();
 	static ArrayList<Force> force = new ArrayList<Force>();
-	static ComputeWeightedCenter CWC = new ComputeWeightedCenter();
-	static Environment environment = new Environment();
+	static ArrayList<SuperMass> allSuperMasses = new ArrayList<SuperMass>();
 
 	public Springies ()
 	{
 		// set the window size
-		int height = 500;
+		int height = 700;
 		double aspect = 16.0 / 9.0;
 		initEngineComponent((int) (height * aspect), height);
-		JGPoint center = new JGPoint(height/2, height/2);
-		environment.setGlobalCenter(center);
 	}
 
 	@Override
@@ -77,8 +67,36 @@ public class Springies extends JGEngine
 		// so set all directions (e.g., forces, velocities) in world coords
 		WorldManager.initWorld(this);
 		addWalls();
-		chooseFile();
-		System.out.println(pfWidth() + " " + pfHeight());
+		parseXML();
+	}
+
+	@Override
+	public void doFrame ()
+	{
+		// update game objects
+		WorldManager.getWorld().step(1f, 1);
+
+		for(Force f: force){
+			f.calculateForce();
+		}
+		if(getLastKey() == 78){
+			clearLastKey();
+			parseXML();
+		}
+		if(getLastKey() == 67){
+			clearLastKey();
+			clearAllTheDamnAssemblies();
+		}
+
+		moveObjects();
+		checkCollision(1 + 2, 1);
+	}
+
+	@Override
+	public void paintFrame ()
+	{
+		// nothing to do
+		// the objects paint themselves
 	}
 
 	private void addWalls ()
@@ -103,52 +121,19 @@ public class Springies extends JGEngine
 		wall.setPos(displayWidth() - WALL_MARGIN, displayHeight() / 2);
 	}
 
-	@Override
-	public void doFrame ()
-	{
-		// update game objects
-		WorldManager.getWorld().step(1f, 1);
-			 
-		for(SuperMass o: obj.values()){
-			o.calculateObjForce();
-			CWC.collectCenters(o.x, o.y, o.getMass());
-		} 
-		environment.setGlobalCenter(CWC.computeGlobalCenter());
-		
-		for(Force f: force){
-			f.calculateForce();
-		}
-		 
-		moveObjects();
-		checkCollision(1 + 2, 1);
-		CWC.clearList();
-	}
+	public static void parseXML() {
+		//Environmental variables, will change to read the environment XML file later
+		float gravAccel = (float)9;
+		float viscosity = (float)0.8;
+		float cOmMag = (float)250;
+		float cOmExp = (float)2;
 
-	@Override
-	public void paintFrame ()
-	{
-		// nothing to do
-		// the objects paint themselves
-	}
-
-	public static void chooseFile() {
+		//Uses the FileChooser to let the user grab the XML file
 		final FileChooser fc = new FileChooser();
-		File file1 = fc.getFile(); 
-		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(file1);
-			doc.getDocumentElement().normalize();
-
-			System.out.println("root of xml file" + doc.getDocumentElement().getNodeName());
-			System.out.println("==========================");
-			buildEnvironment(doc);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		
 		File file = fc.getFile();
+
+		HashMap<String,SuperMass> obj = new HashMap<String,SuperMass>();
+
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -159,199 +144,109 @@ public class Springies extends JGEngine
 			System.out.println("==========================");
 
 			//parse fixed and dynamic masses
-			buildDynamicMasses(doc);
-			System.out.println();
-			buildFixedMasses(doc);
+			System.out.println("dynamic masses:");
+			NodeList nodeNodes = doc.getElementsByTagName("mass");
+			for( int j = 0; j < nodeNodes.getLength(); j++){
+				Node node = nodeNodes.item(j);
+				System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node) +
+						" vx: " + getNodeAttr("vx", node) + " vy: " + getNodeAttr("vy", node) + " mass: " + getNodeAttr("mass", node));
+
+				float mass = 1;
+				float xv = 0;
+				float yv = 0;
+
+				if(!(getNodeAttr("mass", node).equals(""))){
+					mass = Float.parseFloat(getNodeAttr("mass", node));
+				}
+				if(!(getNodeAttr("xv", node).equals(""))){
+					xv = Float.parseFloat(getNodeAttr("xv", node));
+				}
+				if(!(getNodeAttr("yv", node).equals(""))){
+					yv = Float.parseFloat(getNodeAttr("yv", node));
+				}
+				float x = Float.parseFloat(getNodeAttr("x", node));
+				float y = Float.parseFloat(getNodeAttr("y", node));
+				String id = getNodeAttr("id", node);
+				Mass tempMass = new Mass(id, x, y+20, mass, xv, yv);
+				allSuperMasses.add(tempMass);
+				obj.put(id, tempMass);
+			}
 			System.out.println();
 
+			System.out.println("fixed masses:");
+			nodeNodes = doc.getElementsByTagName("fixed");
+			for( int j = 0; j < nodeNodes.getLength(); j++){
+				Node node = nodeNodes.item(j);
+				System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node));
+
+				String id = getNodeAttr("id", node);
+				float x = Float.parseFloat(getNodeAttr("x", node));
+				float y = Float.parseFloat(getNodeAttr("y", node));
+
+				Fixed tempFixed = new Fixed(id, x, y);
+				allSuperMasses.add(tempFixed);
+				obj.put(id, tempFixed);
+				System.out.println();
+			}
+
+
 			//parse links
-			buildSprings(doc);
+			System.out.println("springs:");
+			nodeNodes = doc.getElementsByTagName("spring");
+			for( int j = 0; j < nodeNodes.getLength(); j++){
+				Node node = nodeNodes.item(j);
+				System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
+						" constant: " + getNodeAttr("constant", node));
+
+				float constant = 1;
+				if(!(getNodeAttr("constant", node).equals(""))){
+					constant = Float.parseFloat(getNodeAttr("constant", node));
+				}
+				float rl = 50;
+				if(!(getNodeAttr("restlength", node).equals(""))){
+					rl = Float.parseFloat(getNodeAttr("restlength", node));
+				}
+				SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
+				SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
+
+				force.add(new Spring(a, b, rl, constant));
+			}
 			System.out.println();
-			buildMuscles(doc);
+
+			System.out.println("muscles:");
+			nodeNodes = doc.getElementsByTagName("muscle");
+			for( int j = 0; j < nodeNodes.getLength(); j++){
+				Node node = nodeNodes.item(j);
+				System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
+						" constant: " + getNodeAttr("constant", node) + " amplitude: " + getNodeAttr("amplitude", node));
+				
+				float constant = 1;
+				if(!(getNodeAttr("constant", node).equals(""))){
+					constant = Float.parseFloat(getNodeAttr("constant", node));
+				}
+				float rl = 50;
+				if(!(getNodeAttr("restlength", node).equals(""))){
+					rl = Float.parseFloat(getNodeAttr("restlength", node));
+				}
+				float amplitude = 50;
+				if(!(getNodeAttr("restlength", node).equals(""))){
+					rl = Float.parseFloat(getNodeAttr("restlength", node));
+				}
+				SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
+				SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
+
+				force.add(new Muscle(a, b, rl, constant, amplitude));
+			}
 			System.out.println();
+
+			//Pass list of masses to each environmental (non-spring/muscle) Force constructor
+			force.add(new Gravity(gravAccel, new ArrayList<SuperMass>(obj.values())));
+			force.add(new Viscosity(viscosity, new ArrayList<SuperMass>(obj.values())));
+			force.add(new CenterOfMass(cOmMag, cOmExp, new ArrayList<SuperMass>(obj.values())));
+
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
-		}
-		
-	}
-
-	public static void buildEnvironment(Document doc){ 
-		System.out.println("Environment Variables:");
-		//create gravity
-		buildGravity(doc);
-		
-		//create viscosity 
-		buildViscosity(doc);
-			
-		//create centerofmass
-		buildCenterMass(doc);
-		
-		//build walls
-		buildWalls(doc);
-	}
-	
-	public static void buildWalls(Document doc){
-		NodeList wallNodes; 
-		
-		wallNodes = doc.getElementsByTagName("wall");	
-		int id = 0; 
-		float magnitude = (float)0;
-		float exponent = (float)0;
-		
-		for(int i=0; i<wallNodes.getLength(); i++){
-			if(!(getNodeAttr("id", wallNodes.item(i)).equals(""))){
-				id = Integer.parseInt(getNodeAttr("id", wallNodes.item(i)));
-			}
-			if(!(getNodeAttr("magnitude", wallNodes.item(i)).equals(""))){
-				magnitude = Float.parseFloat(getNodeAttr("magnitude", wallNodes.item(i)));	
-			}
-			if(!(getNodeAttr("exponent", wallNodes.item(i)).equals(""))){
-				exponent = Float.parseFloat(getNodeAttr("exponent", wallNodes.item(i)));
-			}
-			environment.setWall(id, magnitude, exponent);
-		}
-
-	}
-	public static void buildCenterMass(Document doc){
-		NodeList centermassNode;
-		
-		centermassNode = doc.getElementsByTagName("centermass"); 
-		
-		if(!(getNodeAttr("exponent", centermassNode.item(0)).equals(""))){
-			environment.setCenterOfMass_Exponent(Float.parseFloat(getNodeAttr("exponent", centermassNode.item(0))));			
-		}
-		if(!(getNodeAttr("magnitude", centermassNode.item(0)).equals(""))){
-			environment.setCenterOfMass_Magnitude(Float.parseFloat(getNodeAttr("magnitude", centermassNode.item(0))));
-		}		
-		
-	}
-	
-	public static void buildGravity(Document doc){
-		NodeList gravityNode;
-
-		gravityNode = doc.getElementsByTagName("gravity");
-		
-		float direction = (float) 0;
-		float magnitude = (float) 0;  
-		
-		
-		if(!(getNodeAttr("direction", gravityNode.item(0)).equals(""))){
-			direction = Float.parseFloat(getNodeAttr("direction", gravityNode.item(0)));			
-		}
-		if(!(getNodeAttr("magnitude", gravityNode.item(0)).equals(""))){
-			magnitude = Float.parseFloat(getNodeAttr("magnitude", gravityNode.item(0)));
-		}
-		
-		environment.setGravAccel((float) (magnitude*Math.sin(direction)));
-		System.out.println("gravity " + environment.getGravAccel());
-	}
-	
-	public static void buildViscosity(Document doc){
-		NodeList viscosityNode; 
-		
-		viscosityNode = doc.getElementsByTagName("viscosity");
-		
-		if(!(getNodeAttr("magnitude", viscosityNode.item(0)).equals(""))){
-			environment.setViscosityDampingConstant(Float.parseFloat(getNodeAttr("magnitude", viscosityNode.item(0))));
-		}		
-	}
-
-	public static void buildMuscles(Document doc) {
-		NodeList nodeNodes;
-		System.out.println("muscles:");
-		nodeNodes = doc.getElementsByTagName("muscle");
-		for( int j = 0; j < nodeNodes.getLength(); j++){
-			Node node = nodeNodes.item(j);
-			System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
-					" constant: " + getNodeAttr("constant", node));	
-
-			float constant = (float) 1;
-			if(!(getNodeAttr("constant", node).equals(""))){
-				constant = (float) Double.parseDouble(getNodeAttr("constant", node));
-			}
-			float rl = 50;
-			if(!(getNodeAttr("restlength", node).equals(""))){
-				rl = Float.parseFloat(getNodeAttr("restlength", node));
-			}
-			float amp = 1;
-			if(!(getNodeAttr("restlength", node).equals(""))){
-				amp = Float.parseFloat(getNodeAttr("restlength", node));
-			}
-			SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
-			SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
-			force.add(new Muscle(a, b, rl,  constant,amp));
-		}
-	}
-
-	public static void buildSprings(Document doc) {
-		NodeList nodeNodes;
-		System.out.println("springs:");
-		nodeNodes = doc.getElementsByTagName("spring");
-		for( int j = 0; j < nodeNodes.getLength(); j++){
-			Node node = nodeNodes.item(j);
-			System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
-					" constant: " + getNodeAttr("constant", node));
-
-			double constant = 1;
-			if(!(getNodeAttr("constant", node).equals(""))){
-				constant = Double.parseDouble(getNodeAttr("constant", node));
-			}
-			float rl = 50;
-			if(!(getNodeAttr("restlength", node).equals(""))){
-				rl = Float.parseFloat(getNodeAttr("restlength", node));
-			}
-			SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
-			SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
-
-			force.add(new Spring(a, b, rl,  constant));
-		}
-	}
-
-	public static void buildFixedMasses(Document doc) {
-		System.out.println("fixed masses:");
-		NodeList nodeNodes = doc.getElementsByTagName("fixed");
-		for( int j = 0; j < nodeNodes.getLength(); j++){
-			Node node = nodeNodes.item(j);
-			System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node));
-
-			String id = getNodeAttr("id", node);
-			float x = Float.parseFloat(getNodeAttr("x", node));
-			float y = Float.parseFloat(getNodeAttr("y", node));
-
-			obj.put(id, new Fixed(id, x, y));
-		}
-	}
-
-	public static void buildDynamicMasses(Document doc) {
-		System.out.println("dynamic masses:");
-		NodeList nodeNodes = doc.getElementsByTagName("mass");
-		for( int j = 0; j < nodeNodes.getLength(); j++){
-			Node node = nodeNodes.item(j);
-			System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node) +
-					" vx: " + getNodeAttr("vx", node) + " vy: " + getNodeAttr("vy", node) + " mass: " + getNodeAttr("mass", node));
-
-			float mass = 1;
-			float xv = 0;
-			float yv = 0;
-
-			if(!(getNodeAttr("mass", node).equals(""))){
-				mass = Float.parseFloat(getNodeAttr("mass", node));
-			}
-			if(!(getNodeAttr("xv", node).equals(""))){
-				xv = Float.parseFloat(getNodeAttr("xv", node));
-			}
-			if(!(getNodeAttr("yv", node).equals(""))){
-				yv = Float.parseFloat(getNodeAttr("yv", node));
-			}
-			float x = Float.parseFloat(getNodeAttr("x", node));
-			float y = Float.parseFloat(getNodeAttr("y", node));
-			String id = getNodeAttr("id", node);
-			System.out.println(mass);
-
-			obj.put(id, new Mass(id, x, y, mass, xv, yv, environment.getGravAccel(), 
-					environment.getViscosityDampingConstant(), environment.getCenterOfMass_Magnitude(), 
-					environment.getCenterOfMass_Exponent(), environment.getGlobalCenter(), environment.getAllWalls()));
 		}
 	}
 
@@ -364,5 +259,14 @@ public class Springies extends JGEngine
 			}
 		}
 		return "";
+	}
+
+	public void clearAllTheDamnAssemblies(){
+		for(SuperMass m: allSuperMasses){
+			m.remove();
+		}
+		for(Force f: force){
+			f.remove();
+		}
 	}
 }

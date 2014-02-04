@@ -1,36 +1,30 @@
 package forces;
-import java.awt.Color;
-
 import jgame.JGColor;
 import nodes.SuperMass;
 
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
 
 public class Spring extends Force{
 	private SuperMass massA;
 	private SuperMass massB;
-	private double constant;
+	private float constant;
 	private float restLength;
 
-	public Spring(SuperMass a, SuperMass b, float rl, double d) {
-		super();
+	public Spring(SuperMass a, SuperMass b, float rl, float c) {
 		massA = a;
 		massB = b;
-		constant = d;
+		constant = c;
 		restLength = rl;
 	}
 
 	@Override
-	public Vec2 calculateForce() {
+	public void calculateForce() {
 		Vec2 locA = massA.getPos();
 		Vec2 locB = massB.getPos();
 		
 		double distance = findDistance(locA,locB);
 		massA.setForce(constant*(distance-restLength)*(locB.x-locA.x)/distance, constant*(distance-restLength)*(locB.y-locA.y)/distance);
 		massB.setForce(-constant*(distance-restLength)*(locB.x-locA.x)/distance, -constant*(distance-restLength)*(locB.y-locA.y)/distance);
-				
-		return null;
 	}
 	
 	@Override
