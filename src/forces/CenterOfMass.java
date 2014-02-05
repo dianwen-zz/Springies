@@ -10,7 +10,7 @@ public class CenterOfMass extends Force{
 	float magnitude;
 	float exponent;
 	ArrayList<SuperMass> masses;
-	
+
 	public CenterOfMass(float cOmMag, float cOmExp, ArrayList<SuperMass> m){
 		magnitude = cOmMag;
 		exponent = cOmExp;
@@ -19,30 +19,43 @@ public class CenterOfMass extends Force{
 
 	@Override
 	public void calculateForce() {
-		Vec2 center = calculateCenter();
-		
-		for(SuperMass m: masses){
-			//Vec2 displacement = center.sub(m.getBody().getWorldCenter());
-			Vec2 displacement = center.sub(m.getPos());
-			Vec2 cOmForce = displacement.mul((float) (magnitude/Math.pow(displacement.length(),exponent)));
-			
-			m.setForce(cOmForce.x, cOmForce.y);
+		if(isOn){
+			Vec2 center = calculateCenter();
+
+			for(SuperMass m: masses){
+				//Vec2 displacement = center.sub(m.getBody().getWorldCenter());
+				Vec2 displacement = center.sub(m.getPos());
+				Vec2 cOmForce = displacement.mul((float) (magnitude/Math.pow(displacement.length(),exponent)));
+
+				m.setForce(cOmForce.x, cOmForce.y);
+			}
 		}
 	}
-	
+
 	public Vec2 calculateCenter(){
 		float totalMass = 0;
 		float weightedXLoc = 0; //Summation of m_i*x_i, where m_i is the mass of a mass, and x_i is its x coordinate
 		float weightedYLoc = 0;
-		
-		for(SuperMass m: masses){
-			weightedXLoc += (float) (m.getMass()*m.x);
-			weightedYLoc += (float) (m.getMass()*m.y);
-			totalMass += m.getMass();
+
+		if(isOn){
+			for(SuperMass m: masses){
+				weightedXLoc += (float) (m.getMass()*m.x);
+				weightedYLoc += (float) (m.getMass()*m.y);
+				totalMass += m.getMass();
+			}
 		}
-		
+
 		return new Vec2(weightedXLoc/totalMass, weightedYLoc/totalMass);
 	}
-	
+
+	@Override
+	public void toggleForces(int toggle) {
+		// TODO Auto-generated method stub
+		if(toggle == 5)
+			isOn = true;
+		if(toggle == 6)
+			isOn = false;
+	}
+
 
 }

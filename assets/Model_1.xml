@@ -4,15 +4,8 @@
     <author>Dianwan Li, Anthony Olawo</author>
 
     <nodes>
-        <mass id="m1" x="100" y="100" xvel="1" yvel="1" mass = "1"/>
-        <mass id="m2" x="200" y="200" xvel="2" yvel="2" mass = "2"/>
-        
-        <fixed id="m3" x="300" y="400"/>
-        <fixed id="m4" x="400" y="400"/>
+        <mass id="m1" x="450" y="300" mass = "1"/>
+         <mass id="m2" x="750" y="300" mass = "1"/>
     </nodes>
     
-    <links>
-        <muscle a="m1" b="m2" restlength="14.0" constant="0.005"/>
-        <spring a="m3" b="m4" restlength="14.0" constant="0.005"/>
-    </links>
 </model>

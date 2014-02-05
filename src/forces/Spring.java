@@ -36,4 +36,10 @@ public class Spring extends Force{
 		return Math.sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
 	}
 
+	@Override
+	public void toggleForces(int toggle) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

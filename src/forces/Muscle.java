@@ -44,4 +44,8 @@ public class Muscle extends Force {
 	public void paint(){
 		eng.drawLine(massA.getPos().x, massA.getPos().y, massB.getPos().x, massB.getPos().y, 1, JGColor.gray);
 	}
+
+	@Override
+	public void toggleForces(int toggle) {
+	}
 }

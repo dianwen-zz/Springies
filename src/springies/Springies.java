@@ -35,7 +35,15 @@ public class Springies extends JGEngine
 {
 	static ArrayList<Force> force = new ArrayList<Force>();
 	static ArrayList<SuperMass> allSuperMasses = new ArrayList<SuperMass>();
-
+	private boolean gravityIsOn = true;
+	private boolean viscosityIsOn = true;
+	private boolean cOmIsOn = true;
+	private boolean topWallIsOn = true;
+	private boolean leftWallIsOn = true;
+	private boolean bottomWallIsOn = true;
+	private boolean rightWallIsOn = true;
+	private int toggle;
+	
 	public Springies ()
 	{
 		// set the window size
@@ -76,19 +84,58 @@ public class Springies extends JGEngine
 	{
 		// update game objects
 		WorldManager.getWorld().step(1f, 1);
-
+	
 		for(Force f: force){
 			f.calculateForce();
+			f.toggleForces(toggle);
 		}
-		if(getLastKey() == 78){
+		
+		if(getLastKey() == 78){ //if n is pressed add an assembly 
 			clearLastKey();
 			parseXML();
 		}
-		if(getLastKey() == 67){
+		if(getLastKey() == 67){ //if c is pressed clear the screen of all assemblies 
 			clearLastKey();
 			clearAllTheDamnAssemblies();
 		}
-
+		
+		//MAKE A TOGGLE MAP FOR README
+		if(getLastKey() == 71){
+			clearLastKey();
+			gravityIsOn = ! gravityIsOn;
+			toggle = gravityIsOn ? 1:2;
+		}
+		if(getLastKey() == 86){
+			clearLastKey();
+			viscosityIsOn = ! viscosityIsOn;
+			toggle = viscosityIsOn ? 3:4;
+		}
+		if(getLastKey() == 77){
+			clearLastKey();
+			cOmIsOn = ! cOmIsOn;
+			toggle = cOmIsOn ? 5:6;
+		}	
+		if(getLastKey() == 49){
+			clearLastKey();
+			topWallIsOn = ! topWallIsOn;
+			toggle = topWallIsOn ? 7:8;
+		}	
+		if(getLastKey() == 50){
+			clearLastKey();
+			leftWallIsOn = ! leftWallIsOn;
+			toggle = leftWallIsOn ? 9:10;
+		}	
+		if(getLastKey() == 51){
+			clearLastKey();
+			bottomWallIsOn = ! bottomWallIsOn;
+			toggle = bottomWallIsOn ? 11:12;
+		}	
+		if(getLastKey() == 52){
+			clearLastKey();
+			rightWallIsOn = ! rightWallIsOn;
+			toggle = rightWallIsOn ? 13:14;
+		}	
+		
 		moveObjects();
 		checkCollision(1 + 2, 1);
 	}
@@ -128,14 +175,10 @@ public class Springies extends JGEngine
 		float viscosity = (float)0.8;
 		float cOmMag = (float)75;
 		float cOmExp = (float)2;
-/*		float[] topWall = {50,1};
+		float[] topWall = {50,1};
 		float[] leftWall = {100,1};
 		float[] bottomWall = {50,1};
-		float[] rightWall = {100,1};*/
-		float[] topWall = {1550,1};
-		float[] leftWall = {1600,1};
-		float[] bottomWall = {1550,1};
-		float[] rightWall = {1600,1};
+		float[] rightWall = {100,1};
 
 		//Uses the FileChooser to let the user grab the XML file
 		final FileChooser fc = new FileChooser();
