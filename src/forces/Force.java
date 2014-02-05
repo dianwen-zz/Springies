@@ -6,7 +6,8 @@ import nodes.SuperMass;
 import org.jbox2d.common.Vec2;
 
 public abstract class Force extends JGObject{
-	protected boolean isOn = true; 
+	protected boolean isOn = true;
+	int bitMask;
 	
 	public Force() {
 		super("force", true, 0, 0, 0, null);
@@ -15,5 +16,7 @@ public abstract class Force extends JGObject{
 
 	public abstract void calculateForce();
 	
-	public abstract void toggleForces(int toggle);
+	public void toggleForces(int toggle){
+		isOn = ((toggle&bitMask) == bitMask) ? true:false;
+	}
 }

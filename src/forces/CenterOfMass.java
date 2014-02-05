@@ -15,6 +15,7 @@ public class CenterOfMass extends Force{
 		magnitude = cOmMag;
 		exponent = cOmExp;
 		masses = m;
+		bitMask = 4;
 	}
 
 	@Override
@@ -47,15 +48,4 @@ public class CenterOfMass extends Force{
 
 		return new Vec2(weightedXLoc/totalMass, weightedYLoc/totalMass);
 	}
-
-	@Override
-	public void toggleForces(int toggle) {
-		// TODO Auto-generated method stub
-		if(toggle == 5)
-			isOn = true;
-		if(toggle == 6)
-			isOn = false;
-	}
-
-
 }

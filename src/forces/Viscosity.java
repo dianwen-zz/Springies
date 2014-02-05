@@ -12,6 +12,7 @@ public class Viscosity extends Force{
 	public Viscosity(float visc, ArrayList<SuperMass> m){
 		magnitude = visc;
 		masses = m;
+		bitMask = 2;
 	}
 
 	public void calculateForce() {
@@ -21,14 +22,5 @@ public class Viscosity extends Force{
 				m.setForce(viscForce.x, viscForce.y);
 			}
 		}
-	}
-
-	@Override
-	public void toggleForces(int toggle) {
-		// TODO Auto-generated method stub
-		if(toggle == 3)
-			isOn = true;
-		if(toggle == 4)
-			isOn = false;
 	}
 }

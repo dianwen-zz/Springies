@@ -12,6 +12,7 @@ public class Gravity extends Force{
 	public Gravity(float accel, ArrayList<SuperMass> m){
 		magnitude = accel;
 		masses = m;
+		bitMask = 1;
 	}
 
 	public void calculateForce() {
@@ -21,15 +22,4 @@ public class Gravity extends Force{
 			}
 		}
 	}
-
-	@Override
-	public void toggleForces(int toggle){
-		if(toggle == 1)
-			isOn = true;
-		if(toggle == 2)
-			isOn = false;
-		//System.out.println("Gravity is on: "+isOn);
-		// TODO Auto-generated method stub
-	}
-
 }

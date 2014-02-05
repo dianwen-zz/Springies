@@ -35,17 +35,15 @@ public class Springies extends JGEngine
 {
 	static ArrayList<Force> force = new ArrayList<Force>();
 	static ArrayList<SuperMass> allSuperMasses = new ArrayList<SuperMass>();
-	private boolean gravityIsOn = true;
-	private boolean viscosityIsOn = true;
-	private boolean cOmIsOn = true;
-	private boolean topWallIsOn = true;
-	private boolean leftWallIsOn = true;
-	private boolean bottomWallIsOn = true;
-	private boolean rightWallIsOn = true;
-	private int toggle;
-	
+	//Toggle is bitfield of 1s in Binary, indicating that all forces are on by default
+	private int toggle =
+			(int)  (Math.pow(2,0) + Math.pow(2,1) + Math.pow(2,2) + Math.pow(2,3) +
+					Math.pow(2,4) + Math.pow(2,5) + Math.pow(2,6) + Math.pow(2,7) +
+					Math.pow(2,8)); //only 7 out of 9 bits are used for toggling
+
 	public Springies ()
 	{
+		System.out.println(toggle);
 		// set the window size
 		int height = 700;
 		double aspect = 16.0 / 9.0;
@@ -84,12 +82,12 @@ public class Springies extends JGEngine
 	{
 		// update game objects
 		WorldManager.getWorld().step(1f, 1);
-	
+
 		for(Force f: force){
 			f.calculateForce();
 			f.toggleForces(toggle);
 		}
-		
+
 		if(getLastKey() == 78){ //if n is pressed add an assembly 
 			clearLastKey();
 			parseXML();
@@ -98,44 +96,37 @@ public class Springies extends JGEngine
 			clearLastKey();
 			clearAllTheDamnAssemblies();
 		}
-		
+
 		//MAKE A TOGGLE MAP FOR README
-		if(getLastKey() == 71){
+		if(getLastKey() == 71){ //'g'
 			clearLastKey();
-			gravityIsOn = ! gravityIsOn;
-			toggle = gravityIsOn ? 1:2;
+			toggle=toggle^1;
 		}
-		if(getLastKey() == 86){
+		if(getLastKey() == 86){ //'v'
 			clearLastKey();
-			viscosityIsOn = ! viscosityIsOn;
-			toggle = viscosityIsOn ? 3:4;
+			toggle=toggle^2;
 		}
-		if(getLastKey() == 77){
+		if(getLastKey() == 77){ //'m'
 			clearLastKey();
-			cOmIsOn = ! cOmIsOn;
-			toggle = cOmIsOn ? 5:6;
+			toggle=toggle^4;
 		}	
-		if(getLastKey() == 49){
+		if(getLastKey() == 49){ //'1'
 			clearLastKey();
-			topWallIsOn = ! topWallIsOn;
-			toggle = topWallIsOn ? 7:8;
+			toggle=toggle^8;
 		}	
-		if(getLastKey() == 50){
+		if(getLastKey() == 50){ //'2'
 			clearLastKey();
-			leftWallIsOn = ! leftWallIsOn;
-			toggle = leftWallIsOn ? 9:10;
+			toggle=toggle^16;
 		}	
-		if(getLastKey() == 51){
+		if(getLastKey() == 51){ //'3'
 			clearLastKey();
-			bottomWallIsOn = ! bottomWallIsOn;
-			toggle = bottomWallIsOn ? 11:12;
+			toggle=toggle^32;
 		}	
-		if(getLastKey() == 52){
+		if(getLastKey() == 52){ //'4'
 			clearLastKey();
-			rightWallIsOn = ! rightWallIsOn;
-			toggle = rightWallIsOn ? 13:14;
+			toggle=toggle^64;
 		}	
-		
+
 		moveObjects();
 		checkCollision(1 + 2, 1);
 	}
@@ -172,13 +163,13 @@ public class Springies extends JGEngine
 	public static void parseXML() {
 		//Environmental variables, will change to read the environment XML file later
 		float gravAccel = (float)5;
-		float viscosity = (float)0.8;
+		float viscosity = (float)1;
 		float cOmMag = (float)75;
 		float cOmExp = (float)2;
-		float[] topWall = {50,1};
-		float[] leftWall = {100,1};
-		float[] bottomWall = {50,1};
-		float[] rightWall = {100,1};
+		float[] topWall = {1350,1};
+		float[] leftWall = {1400,1};
+		float[] bottomWall = {1350,1};
+		float[] rightWall = {1400,1};
 
 		//Uses the FileChooser to let the user grab the XML file
 		final FileChooser fc = new FileChooser();
@@ -271,7 +262,7 @@ public class Springies extends JGEngine
 				Node node = nodeNodes.item(j);
 				System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
 						" constant: " + getNodeAttr("constant", node) + " amplitude: " + getNodeAttr("amplitude", node));
-				
+
 				float constant = 1;
 				if(!(getNodeAttr("constant", node).equals(""))){
 					constant = Float.parseFloat(getNodeAttr("constant", node));
