@@ -1,0 +1,20 @@
+﻿Added muscle
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# Explicit paths specified without -i nor -o; assuming --only paths...
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	deleted:    src/DOMParser.java
+#	modified:   src/forces/Muscle.java
+#	deleted:    src/forces/SineWave.java
+#	modified:   src/nodes/Mass.java
+#	modified:   src/springies/Springies.java
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	assets/testMuscle.xml
+#	hs_err_pid16304.log
+

@@ -1,9 +1,9 @@
 <environment>
-  <gravity direction="90" magnitude="9"/>
+  <gravity direction="90" magnitude="7"/>
   <viscosity magnitude="0.8"/>
-  <centermass magnitude="250" exponent="1"/>
-  <wall id="1" magnitude="40" exponent="1"/>
-  <wall id="2" magnitude="50" exponent="1"/>
-  <wall id="3" magnitude="180" exponent="1"/>
-  <wall id="4" magnitude="10" exponent="1"/>
+  <centermass magnitude="75" exponent="1"/>
+  <wall id="1" magnitude="1000" exponent="1"/>
+  <wall id="2" magnitude="1500" exponent="1"/>
+  <wall id="3" magnitude="1000" exponent="1"/>
+  <wall id="4" magnitude="1500" exponent="1"/>
 </environment>

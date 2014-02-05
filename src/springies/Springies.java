@@ -27,6 +27,7 @@ import forces.Gravity;
 import forces.Muscle;
 import forces.Spring;
 import forces.Viscosity;
+import forces.WallRepulsion;
 
 
 @SuppressWarnings("serial")
@@ -123,10 +124,18 @@ public class Springies extends JGEngine
 
 	public static void parseXML() {
 		//Environmental variables, will change to read the environment XML file later
-		float gravAccel = (float)9;
+		float gravAccel = (float)5;
 		float viscosity = (float)0.8;
-		float cOmMag = (float)250;
+		float cOmMag = (float)75;
 		float cOmExp = (float)2;
+/*		float[] topWall = {50,1};
+		float[] leftWall = {100,1};
+		float[] bottomWall = {50,1};
+		float[] rightWall = {100,1};*/
+		float[] topWall = {1550,1};
+		float[] leftWall = {1600,1};
+		float[] bottomWall = {1550,1};
+		float[] rightWall = {1600,1};
 
 		//Uses the FileChooser to let the user grab the XML file
 		final FileChooser fc = new FileChooser();
@@ -243,6 +252,7 @@ public class Springies extends JGEngine
 			force.add(new Gravity(gravAccel, new ArrayList<SuperMass>(obj.values())));
 			force.add(new Viscosity(viscosity, new ArrayList<SuperMass>(obj.values())));
 			force.add(new CenterOfMass(cOmMag, cOmExp, new ArrayList<SuperMass>(obj.values())));
+			force.add(new WallRepulsion(topWall, leftWall, bottomWall, rightWall, new ArrayList<SuperMass>(obj.values())));
 
 		}
 		catch (Exception ex) {
