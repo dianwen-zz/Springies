@@ -5,19 +5,19 @@ import java.util.ArrayList;
 import nodes.SuperMass;
 
 public class WallRepulsion extends Force{
-	float[] topWall = new float[2]; //1st element is magnitude, 2nd is exponent
-	float[] leftWall = new float[2];
-	float[] bottomWall = new float[2];
-	float[] rightWall = new float[2];
-	ArrayList<SuperMass> masses;
-	boolean isTopOn = true; 
-	boolean isBottomOn = true; 
-	boolean isRightOn = true; 
-	boolean isLeftOn = true;
-	int topMask = 8;
-	int leftMask = 16;
-	int bottomMask = 32;
-	int rightMask = 64;
+	private float[] topWall = new float[2]; //1st element is magnitude, 2nd is exponent
+	private float[] leftWall = new float[2];
+	private float[] bottomWall = new float[2];
+	private float[] rightWall = new float[2];
+	private ArrayList<SuperMass> masses;
+	private boolean isTopOn = true; 
+	private boolean isBottomOn = true; 
+	private boolean isRightOn = true; 
+	private boolean isLeftOn = true;
+	private int topMask = 8;
+	private int leftMask = 16;
+	private int bottomMask = 32;
+	private int rightMask = 64;
 
 	public WallRepulsion(float[] top, float[] left, float[] bottom, float[] right, ArrayList<SuperMass> m){
 		topWall = top;

@@ -6,8 +6,8 @@ import org.jbox2d.common.Vec2;
 import nodes.SuperMass;
 
 public class Viscosity extends Force{
-	float magnitude;
-	ArrayList<SuperMass> masses;
+	private float magnitude;
+	private ArrayList<SuperMass> masses;
 
 	public Viscosity(float visc, ArrayList<SuperMass> m){
 		magnitude = visc;
@@ -18,8 +18,8 @@ public class Viscosity extends Force{
 	public void calculateForce() {
 		if(isOn){
 			for(SuperMass m: masses){
-				Vec2 viscForce = m.getBody().getLinearVelocity().mul(-magnitude);
-				m.setForce(viscForce.x, viscForce.y);
+				Vec2 viscosityForce = m.getBody().getLinearVelocity().mul(-magnitude);
+				m.setForce(viscosityForce.x, viscosityForce.y);
 			}
 		}
 	}

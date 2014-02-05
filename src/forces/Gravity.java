@@ -6,11 +6,11 @@ import org.jbox2d.common.Vec2;
 import nodes.SuperMass;
 
 public class Gravity extends Force{
-	float magnitude;
-	ArrayList<SuperMass> masses;
+	private float magnitude;
+	private ArrayList<SuperMass> masses;
 
-	public Gravity(float accel, ArrayList<SuperMass> m){
-		magnitude = accel;
+	public Gravity(float acceleration, ArrayList<SuperMass> m){
+		magnitude = acceleration;
 		masses = m;
 		bitMask = 1;
 	}

@@ -7,7 +7,7 @@ import org.jbox2d.common.Vec2;
 
 public abstract class Force extends JGObject{
 	protected boolean isOn = true;
-	int bitMask;
+	protected int bitMask;
 	
 	public Force() {
 		super("force", true, 0, 0, 0, null);

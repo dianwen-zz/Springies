@@ -7,13 +7,13 @@ import org.jbox2d.common.Vec2;
 import nodes.SuperMass;
 
 public class CenterOfMass extends Force{
-	float magnitude;
-	float exponent;
-	ArrayList<SuperMass> masses;
+	private float magnitude;
+	private float exponent;
+	private ArrayList<SuperMass> masses;
 
-	public CenterOfMass(float cOmMag, float cOmExp, ArrayList<SuperMass> m){
-		magnitude = cOmMag;
-		exponent = cOmExp;
+	public CenterOfMass(float centerOfMassMagnitude, float centerOfMassExponent, ArrayList<SuperMass> m){
+		magnitude = centerOfMassMagnitude;
+		exponent = centerOfMassExponent;
 		masses = m;
 		bitMask = 4;
 	}
@@ -26,9 +26,9 @@ public class CenterOfMass extends Force{
 			for(SuperMass m: masses){
 				//Vec2 displacement = center.sub(m.getBody().getWorldCenter());
 				Vec2 displacement = center.sub(m.getPos());
-				Vec2 cOmForce = displacement.mul((float) (magnitude/Math.pow(displacement.length(),exponent)));
+				Vec2 centerOfMassForce = displacement.mul((float) (magnitude/Math.pow(displacement.length(),exponent)));
 
-				m.setForce(cOmForce.x, cOmForce.y);
+				m.setForce(centerOfMassForce.x, centerOfMassForce.y);
 			}
 		}
 	}

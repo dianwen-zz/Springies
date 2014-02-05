@@ -43,7 +43,6 @@ public class Springies extends JGEngine
 
 	public Springies ()
 	{
-		System.out.println(toggle);
 		// set the window size
 		int height = 700;
 		double aspect = 16.0 / 9.0;
@@ -134,8 +133,14 @@ public class Springies extends JGEngine
 	@Override
 	public void paintFrame ()
 	{
-		// nothing to do
-		// the objects paint themselves
+		drawString("G: " + ((toggle&1)==1),20,20,-1);
+		drawString("V: " + ((toggle&2)==2),20,50,-1);
+		drawString("M: " + ((toggle&4)==4),20,80,-1);
+		drawString("1: " + ((toggle&8)==8),20,110,-1);
+		drawString("2: " + ((toggle&16)==16),20,140,-1);
+		drawString("3: " + ((toggle&32)==32),20,170,-1);
+		drawString("4: " + ((toggle&64)==64),20,200,-1);
+
 	}
 
 	private void addWalls ()
@@ -162,10 +167,10 @@ public class Springies extends JGEngine
 
 	public static void parseXML() {
 		//Environmental variables, will change to read the environment XML file later
-		float gravAccel = (float)5;
+		float gravityAcceleration = (float)5;
 		float viscosity = (float)1;
-		float cOmMag = (float)75;
-		float cOmExp = (float)2;
+		float centerOfMassMagnitude = (float)75;
+		float centerOfMassExponent = (float)2;
 		float[] topWall = {1350,1};
 		float[] leftWall = {1400,1};
 		float[] bottomWall = {1350,1};
@@ -245,14 +250,14 @@ public class Springies extends JGEngine
 				if(!(getNodeAttr("constant", node).equals(""))){
 					constant = Float.parseFloat(getNodeAttr("constant", node));
 				}
-				float rl = 50;
+				float restLength = 50;
 				if(!(getNodeAttr("restlength", node).equals(""))){
-					rl = Float.parseFloat(getNodeAttr("restlength", node));
+					restLength = Float.parseFloat(getNodeAttr("restlength", node));
 				}
 				SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
 				SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
 
-				force.add(new Spring(a, b, rl, constant));
+				force.add(new Spring(a, b, restLength, constant));
 			}
 			System.out.println();
 
@@ -267,25 +272,25 @@ public class Springies extends JGEngine
 				if(!(getNodeAttr("constant", node).equals(""))){
 					constant = Float.parseFloat(getNodeAttr("constant", node));
 				}
-				float rl = 50;
+				float restLength = 50;
 				if(!(getNodeAttr("restlength", node).equals(""))){
-					rl = Float.parseFloat(getNodeAttr("restlength", node));
+					restLength = Float.parseFloat(getNodeAttr("restlength", node));
 				}
 				float amplitude = 50;
-				if(!(getNodeAttr("restlength", node).equals(""))){
-					rl = Float.parseFloat(getNodeAttr("restlength", node));
+				if(!(getNodeAttr("amplitude", node).equals(""))){
+					amplitude = Float.parseFloat(getNodeAttr("amplitude", node));
 				}
 				SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
 				SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
 
-				force.add(new Muscle(a, b, rl, constant, amplitude));
+				force.add(new Muscle(a, b, restLength, constant, amplitude));
 			}
 			System.out.println();
 
 			//Pass list of masses to each environmental (non-spring/muscle) Force constructor
-			force.add(new Gravity(gravAccel, new ArrayList<SuperMass>(obj.values())));
+			force.add(new Gravity(gravityAcceleration, new ArrayList<SuperMass>(obj.values())));
 			force.add(new Viscosity(viscosity, new ArrayList<SuperMass>(obj.values())));
-			force.add(new CenterOfMass(cOmMag, cOmExp, new ArrayList<SuperMass>(obj.values())));
+			force.add(new CenterOfMass(centerOfMassMagnitude, centerOfMassExponent, new ArrayList<SuperMass>(obj.values())));
 			force.add(new WallRepulsion(topWall, leftWall, bottomWall, rightWall, new ArrayList<SuperMass>(obj.values())));
 
 		}
