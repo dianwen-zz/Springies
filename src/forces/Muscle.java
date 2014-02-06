@@ -22,22 +22,32 @@ public class Muscle extends Force {
 		constant = c;	 
 		amplitude = amp;
 	}
-	
+
 	@Override
 	public void calculateForce() {
 		time+=0.15;
 		float newRestLength = (float) (restLength + amplitude*Math.sin(time));
-		
+
 		Vec2 locA = massA.getPos();
 		Vec2 locB = massB.getPos();
 		double distance = findDistance(locA,locB);
-		
+
 		massA.setForce(constant*(distance-newRestLength)*(locB.x-locA.x)/distance, constant*(distance-newRestLength)*(locB.y-locA.y)/distance);
 		massB.setForce(-constant*(distance-newRestLength)*(locB.x-locA.x)/distance, -constant*(distance-newRestLength)*(locB.y-locA.y)/distance);
+		System.out.println(amplitude);
 	}
-	
+
 	public double findDistance(Vec2 a, Vec2 b){
 		return Math.sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
+	}
+
+	public void increaseAmplitude(){
+		amplitude+=30;
+	}
+
+	public void decreaseAmplitude(){
+		if(amplitude>=0)
+			amplitude-=30;
 	}
 
 	@Override
@@ -47,5 +57,9 @@ public class Muscle extends Force {
 
 	@Override
 	public void toggleForces(int toggle) {
+		if((toggle&128)==128)
+			decreaseAmplitude();
+		if((toggle&256)==256)
+			increaseAmplitude();
 	}
 }

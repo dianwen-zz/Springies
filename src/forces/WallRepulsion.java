@@ -1,6 +1,7 @@
 package forces;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import nodes.SuperMass;
 
@@ -9,7 +10,7 @@ public class WallRepulsion extends Force{
 	private float[] leftWall = new float[2];
 	private float[] bottomWall = new float[2];
 	private float[] rightWall = new float[2];
-	private ArrayList<SuperMass> masses;
+	private List<SuperMass> masses;
 	private boolean isTopOn = true; 
 	private boolean isBottomOn = true; 
 	private boolean isRightOn = true; 

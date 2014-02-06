@@ -1,5 +1,6 @@
 package forces;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.jbox2d.common.Vec2;
 
@@ -7,7 +8,7 @@ import nodes.SuperMass;
 
 public class Gravity extends Force{
 	private float magnitude;
-	private ArrayList<SuperMass> masses;
+	private List<SuperMass> masses;
 
 	public Gravity(float acceleration, ArrayList<SuperMass> m){
 		magnitude = acceleration;
