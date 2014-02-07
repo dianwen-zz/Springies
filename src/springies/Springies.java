@@ -125,7 +125,15 @@ public class Springies extends JGEngine
 			clearLastKey();
 			toggle=toggle^64;
 		}	
-
+		if(getLastKey() == 38){ //Up key depressed, increase size of frame 
+			clearLastKey();
+			increaseWalledAreaSize();
+		}	
+		if(getLastKey() == 40){ //Down key depressed, decrease size of frame 
+			clearLastKey();
+			decreaseWalledAreaSize();
+		}	
+		System.out.println("Last key: "+getLastKey());
 		moveObjects();
 		checkCollision(1 + 2, 1);
 	}
@@ -143,6 +151,15 @@ public class Springies extends JGEngine
 
 	}
 
+	public void increaseWalledAreaSize(){
+		setSize(2*getWidth(),2*getHeight());
+
+	}
+
+	public void decreaseWalledAreaSize(){
+		setSize(getWidth()/2,2*getHeight()/2);
+	}
+	
 	private void addWalls ()
 	{
 		// add walls to bounce off of
