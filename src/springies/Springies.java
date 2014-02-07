@@ -12,11 +12,13 @@ import jboxGlue.PhysicalObject;
 import jboxGlue.PhysicalObjectRect;
 import jboxGlue.WorldManager;
 import jgame.JGColor;
+import jgame.JGPoint;
 import jgame.platform.JGEngine;
 import nodes.Fixed;
 import nodes.Mass;
 import nodes.SuperMass;
 
+import org.jbox2d.common.Vec2;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -34,8 +36,11 @@ import forces.WallRepulsion;
 @SuppressWarnings("serial")
 public class Springies extends JGEngine
 {
+	private static final int WALLED_AREA_ADJUSTMENT = 20;
 	static List<Force> force = new ArrayList<Force>();
 	static List<SuperMass> allSuperMasses = new ArrayList<SuperMass>();
+	static List<Wall> allWalls = new ArrayList<Wall>();
+
 	//Toggle is bitfield of 1s in Binary, indicating that all forces are on by default
 	private int toggle =
 			(int)  (Math.pow(2,0) + Math.pow(2,1) + Math.pow(2,2) + Math.pow(2,3) +
@@ -88,7 +93,7 @@ public class Springies extends JGEngine
 			f.calculateForce();
 			f.toggleForces(toggle);
 		}
-		
+
 		int clearBits8And9 = (int) (Math.pow(2,0) + Math.pow(2,1) + Math.pow(2,2) + Math.pow(2,3) +
 				Math.pow(2,4) + Math.pow(2,5) + Math.pow(2,6));
 		toggle=toggle&clearBits8And9; //clears bits 8 and 9 that are for changing muscle amplitude so it's only called once when toggled
@@ -132,14 +137,6 @@ public class Springies extends JGEngine
 			toggle=toggle^64;
 		}	
 
-		if(getLastKey() == 38){ //Up key depressed, increase size of frame 
-			clearLastKey();
-			increaseWalledAreaSize();
-		}	
-		if(getLastKey() == 40){ //Down key depressed, decrease size of frame 
-			clearLastKey();
-			decreaseWalledAreaSize();
-		}	
 		System.out.println("Last key: "+getLastKey());
 
 		if(getLastKey() == 45){ //'-'
@@ -151,6 +148,18 @@ public class Springies extends JGEngine
 			toggle=toggle^256;
 		}
 
+		if(getLastKey() == 38){ //Up key depressed, increase size of frame 
+			clearLastKey();
+			for(Wall wall: allWalls){
+				wall.changeWallSize(WALLED_AREA_ADJUSTMENT);
+			}
+		}	
+		if(getLastKey() == 40){ //Down key depressed, decrease size of frame 
+			clearLastKey();
+			for(Wall wall: allWalls){
+				wall.changeWallSize(-WALLED_AREA_ADJUSTMENT);
+			}
+		}	
 
 		moveObjects();
 		checkCollision(1 + 2, 1);
@@ -169,15 +178,8 @@ public class Springies extends JGEngine
 
 	}
 
-	public void increaseWalledAreaSize(){
-		setSize(2*getWidth(),2*getHeight());
 
-	}
 
-	public void decreaseWalledAreaSize(){
-		setSize(getWidth()/2,2*getHeight()/2);
-	}
-	
 	private void addWalls ()
 	{
 		// add walls to bounce off of
@@ -186,18 +188,22 @@ public class Springies extends JGEngine
 		final double WALL_THICKNESS = 10;
 		final double WALL_WIDTH = displayWidth() - WALL_MARGIN * 2 + WALL_THICKNESS;
 		final double WALL_HEIGHT = displayHeight() - WALL_MARGIN * 2 + WALL_THICKNESS;
-		PhysicalObject wall = new PhysicalObjectRect("wall", 2, JGColor.green,
-				WALL_WIDTH, WALL_THICKNESS);
+		Wall wall = new Wall("top", WALL_WIDTH, WALL_THICKNESS);
 		wall.setPos(displayWidth() / 2, WALL_MARGIN);
-		wall = new PhysicalObjectRect("wall", 2, JGColor.green,
-				WALL_WIDTH, WALL_THICKNESS);
+		allWalls.add(wall);
+		
+		wall = new Wall ("bottom",WALL_WIDTH, WALL_THICKNESS);
 		wall.setPos(displayWidth() / 2, displayHeight() - WALL_MARGIN);
-		wall = new PhysicalObjectRect("wall", 2, JGColor.green,
-				WALL_THICKNESS, WALL_HEIGHT);
+		allWalls.add(wall);
+		
+		wall = new Wall ("left",WALL_THICKNESS, WALL_HEIGHT);
 		wall.setPos(WALL_MARGIN, displayHeight() / 2);
-		wall = new PhysicalObjectRect("wall", 2, JGColor.green,
-				WALL_THICKNESS, WALL_HEIGHT);
+		allWalls.add(wall);
+		
+		wall = new Wall("right",WALL_THICKNESS, WALL_HEIGHT);
 		wall.setPos(displayWidth() - WALL_MARGIN, displayHeight() / 2);
+		allWalls.add(wall);
+
 	}
 
 	public static void parseXML() {
