@@ -3,6 +3,7 @@ package springies;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,13 +34,14 @@ import forces.WallRepulsion;
 @SuppressWarnings("serial")
 public class Springies extends JGEngine
 {
-	static ArrayList<Force> force = new ArrayList<Force>();
-	static ArrayList<SuperMass> allSuperMasses = new ArrayList<SuperMass>();
+	static List<Force> force = new ArrayList<Force>();
+	static List<SuperMass> allSuperMasses = new ArrayList<SuperMass>();
 	//Toggle is bitfield of 1s in Binary, indicating that all forces are on by default
 	private int toggle =
 			(int)  (Math.pow(2,0) + Math.pow(2,1) + Math.pow(2,2) + Math.pow(2,3) +
 					Math.pow(2,4) + Math.pow(2,5) + Math.pow(2,6) + Math.pow(2,7) +
 					Math.pow(2,8)); //only 7 out of 9 bits are used for toggling
+	//bit 8 and 9 are default 0 because a value of 1 calls muscle amplitude change methods
 
 	public Springies ()
 	{
@@ -86,6 +88,10 @@ public class Springies extends JGEngine
 			f.calculateForce();
 			f.toggleForces(toggle);
 		}
+		
+		int clearBits8And9 = (int) (Math.pow(2,0) + Math.pow(2,1) + Math.pow(2,2) + Math.pow(2,3) +
+				Math.pow(2,4) + Math.pow(2,5) + Math.pow(2,6));
+		toggle=toggle&clearBits8And9; //clears bits 8 and 9 that are for changing muscle amplitude so it's only called once when toggled
 
 		if(getLastKey() == 78){ //if n is pressed add an assembly 
 			clearLastKey();
@@ -125,6 +131,7 @@ public class Springies extends JGEngine
 			clearLastKey();
 			toggle=toggle^64;
 		}	
+
 		if(getLastKey() == 38){ //Up key depressed, increase size of frame 
 			clearLastKey();
 			increaseWalledAreaSize();
@@ -134,6 +141,17 @@ public class Springies extends JGEngine
 			decreaseWalledAreaSize();
 		}	
 		System.out.println("Last key: "+getLastKey());
+
+		if(getLastKey() == 45){ //'-'
+			clearLastKey();
+			toggle=toggle^128;
+		}
+		if(getLastKey() == 61){ //'= or +'
+			clearLastKey();
+			toggle=toggle^256;
+		}
+
+
 		moveObjects();
 		checkCollision(1 + 2, 1);
 	}
