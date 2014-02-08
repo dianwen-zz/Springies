@@ -135,9 +135,7 @@ public class Springies extends JGEngine
 		if(getLastKey() == 52){ //'4'
 			clearLastKey();
 			toggle=toggle^64;
-		}	
-
-		System.out.println("Last key: "+getLastKey());
+		}	 
 
 		if(getLastKey() == 45){ //'-'
 			clearLastKey();
@@ -165,6 +163,9 @@ public class Springies extends JGEngine
 		checkCollision(1 + 2, 1);
 	}
 
+	public void toggler(){
+		
+	}
 	@Override
 	public void paintFrame ()
 	{
