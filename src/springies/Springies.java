@@ -43,6 +43,7 @@ public class Springies extends JGEngine
 	static List<SuperMass> allSuperMasses = new ArrayList<SuperMass>();
 	static List<Wall> allWalls = new ArrayList<Wall>();
 	static Map<Integer, Integer> inGameControls = new HashMap<Integer, Integer>();
+	static XmlParser XmlParser = new XmlParser(); 
 
 	//Toggle is bitfield of 1s in Binary, indicating that all forces are on by default
 	private int toggle =
@@ -59,6 +60,7 @@ public class Springies extends JGEngine
 		initEngineComponent((int) (height * aspect), height);
 		//set in game controls map
 		setInGameControlsMap();
+		
 	}
 
 	public void setInGameControlsMap(){
@@ -102,9 +104,10 @@ public class Springies extends JGEngine
 		// so set all directions (e.g., forces, velocities) in world coords
 		WorldManager.initWorld(this);
 		addWalls();
-		parseXML();
+		parseXML(); 
 	}
 
+	
 	@Override
 	public void doFrame ()
 	{
@@ -198,138 +201,10 @@ public class Springies extends JGEngine
 
 	}
 
-	public static void parseXML() {
-		//Environmental variables, will change to read the environment XML file later
-		float gravityAcceleration = (float)5;
-		float viscosity = (float)1;
-		float centerOfMassMagnitude = (float)75;
-		float centerOfMassExponent = (float)2;
-		float[] topWall = {1350,1};
-		float[] leftWall = {1400,1};
-		float[] bottomWall = {1350,1};
-		float[] rightWall = {1400,1};
-
-		//Uses the FileChooser to let the user grab the XML file
-		final FileChooser fc = new FileChooser();
-		File file = fc.getFile();
-
-		HashMap<String,SuperMass> obj = new HashMap<String,SuperMass>();
-
-		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(file);
-			doc.getDocumentElement().normalize();
-
-			System.out.println("root of xml file" + doc.getDocumentElement().getNodeName());
-			System.out.println("==========================");
-
-			//parse fixed and dynamic masses
-			System.out.println("dynamic masses:");
-			NodeList nodeNodes = doc.getElementsByTagName("mass");
-			for( int j = 0; j < nodeNodes.getLength(); j++){
-				Node node = nodeNodes.item(j);
-				System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node) +
-						" vx: " + getNodeAttr("vx", node) + " vy: " + getNodeAttr("vy", node) + " mass: " + getNodeAttr("mass", node));
-
-				float mass = 1;
-				float xv = 0;
-				float yv = 0;
-
-				if(!(getNodeAttr("mass", node).equals(""))){
-					mass = Float.parseFloat(getNodeAttr("mass", node));
-				}
-				if(!(getNodeAttr("xv", node).equals(""))){
-					xv = Float.parseFloat(getNodeAttr("xv", node));
-				}
-				if(!(getNodeAttr("yv", node).equals(""))){
-					yv = Float.parseFloat(getNodeAttr("yv", node));
-				}
-				float x = Float.parseFloat(getNodeAttr("x", node));
-				float y = Float.parseFloat(getNodeAttr("y", node));
-				String id = getNodeAttr("id", node);
-				Mass tempMass = new Mass(id, x, y+20, mass, xv, yv);
-				allSuperMasses.add(tempMass);
-				obj.put(id, tempMass);
-			}
-			System.out.println();
-
-			System.out.println("fixed masses:");
-			nodeNodes = doc.getElementsByTagName("fixed");
-			for( int j = 0; j < nodeNodes.getLength(); j++){
-				Node node = nodeNodes.item(j);
-				System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node));
-
-				String id = getNodeAttr("id", node);
-				float x = Float.parseFloat(getNodeAttr("x", node));
-				float y = Float.parseFloat(getNodeAttr("y", node));
-
-				Fixed tempFixed = new Fixed(id, x, y);
-				allSuperMasses.add(tempFixed);
-				obj.put(id, tempFixed);
-				System.out.println();
-			}
-
-
-			//parse links
-			System.out.println("springs:");
-			nodeNodes = doc.getElementsByTagName("spring");
-			for( int j = 0; j < nodeNodes.getLength(); j++){
-				Node node = nodeNodes.item(j);
-				System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
-						" constant: " + getNodeAttr("constant", node));
-
-				float constant = 1;
-				if(!(getNodeAttr("constant", node).equals(""))){
-					constant = Float.parseFloat(getNodeAttr("constant", node));
-				}
-				float restLength = 50;
-				if(!(getNodeAttr("restlength", node).equals(""))){
-					restLength = Float.parseFloat(getNodeAttr("restlength", node));
-				}
-				SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
-				SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
-
-				force.add(new Spring(a, b, restLength, constant));
-			}
-			System.out.println();
-
-			System.out.println("muscles:");
-			nodeNodes = doc.getElementsByTagName("muscle");
-			for( int j = 0; j < nodeNodes.getLength(); j++){
-				Node node = nodeNodes.item(j);
-				System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
-						" constant: " + getNodeAttr("constant", node) + " amplitude: " + getNodeAttr("amplitude", node));
-
-				float constant = 1;
-				if(!(getNodeAttr("constant", node).equals(""))){
-					constant = Float.parseFloat(getNodeAttr("constant", node));
-				}
-				float restLength = 50;
-				if(!(getNodeAttr("restlength", node).equals(""))){
-					restLength = Float.parseFloat(getNodeAttr("restlength", node));
-				}
-				float amplitude = 50;
-				if(!(getNodeAttr("amplitude", node).equals(""))){
-					amplitude = Float.parseFloat(getNodeAttr("amplitude", node));
-				}
-				SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
-				SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
-
-				force.add(new Muscle(a, b, restLength, constant, amplitude));
-			}
-			System.out.println();
-
-			//Pass list of masses to each environmental (non-spring/muscle) Force constructor
-			force.add(new Gravity(gravityAcceleration, new ArrayList<SuperMass>(obj.values())));
-			force.add(new Viscosity(viscosity, new ArrayList<SuperMass>(obj.values())));
-			force.add(new CenterOfMass(centerOfMassMagnitude, centerOfMassExponent, new ArrayList<SuperMass>(obj.values())));
-			force.add(new WallRepulsion(topWall, leftWall, bottomWall, rightWall, new ArrayList<SuperMass>(obj.values())));
-
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+	public void parseXML(){
+		XmlParser.parse(); 
+		force = XmlParser.getForce(); 
+		allSuperMasses = XmlParser.getAllSuperMasses();
 	}
 
 	protected static String getNodeAttr(String attrName, Node node ) {
