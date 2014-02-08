@@ -110,31 +110,31 @@ public class Springies extends JGEngine
 		//MAKE A TOGGLE MAP FOR README
 		if(getLastKey() == 71){ //'g'
 			clearLastKey();
-			toggle=toggle^1;
+			toggle^=1;
 		}
 		if(getLastKey() == 86){ //'v'
 			clearLastKey();
-			toggle=toggle^2;
+			toggle^=2;
 		}
 		if(getLastKey() == 77){ //'m'
 			clearLastKey();
-			toggle=toggle^4;
+			toggle^=4;
 		}	
 		if(getLastKey() == 49){ //'1'
 			clearLastKey();
-			toggle=toggle^8;
+			toggle^=8;
 		}	
 		if(getLastKey() == 50){ //'2'
 			clearLastKey();
-			toggle=toggle^16;
+			toggle^=16;
 		}	
 		if(getLastKey() == 51){ //'3'
 			clearLastKey();
-			toggle=toggle^32;
+			toggle^=32;
 		}	
 		if(getLastKey() == 52){ //'4'
 			clearLastKey();
-			toggle=toggle^64;
+			toggle^=64;
 		}	
 
 		System.out.println("Last key: "+getLastKey());

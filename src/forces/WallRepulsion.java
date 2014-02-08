@@ -15,10 +15,10 @@ public class WallRepulsion extends Force{
 	private boolean isBottomOn = true; 
 	private boolean isRightOn = true; 
 	private boolean isLeftOn = true;
-	private int topMask = 8;
-	private int leftMask = 16;
-	private int bottomMask = 32;
-	private int rightMask = 64;
+	private static final int TOP_MASK = 8;
+	private static final int LEFT_MASK = 16;
+	private static final int BOTTOM_MASK = 32;
+	private static final int RIGHT_MASK = 64;
 
 	public WallRepulsion(float[] top, float[] left, float[] bottom, float[] right, ArrayList<SuperMass> m){
 		topWall = top;
@@ -48,9 +48,9 @@ public class WallRepulsion extends Force{
 
 	@Override
 	public void toggleForces(int toggle) {
-		isTopOn = ((toggle&topMask) == topMask) ? true:false;
-		isLeftOn = ((toggle&leftMask) == leftMask) ? true:false;
-		isBottomOn = ((toggle&bottomMask) == bottomMask) ? true:false;
-		isRightOn = ((toggle&rightMask) == rightMask) ? true:false;
+		isTopOn = ((toggle&TOP_MASK) == TOP_MASK) ? true:false;
+		isLeftOn = ((toggle&LEFT_MASK) == LEFT_MASK) ? true:false;
+		isBottomOn = ((toggle&BOTTOM_MASK) == BOTTOM_MASK) ? true:false;
+		isRightOn = ((toggle&RIGHT_MASK) == RIGHT_MASK) ? true:false;
 	}
 }
