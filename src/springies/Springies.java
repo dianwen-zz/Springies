@@ -1,9 +1,11 @@
 package springies;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -40,6 +42,7 @@ public class Springies extends JGEngine
 	static List<Force> force = new ArrayList<Force>();
 	static List<SuperMass> allSuperMasses = new ArrayList<SuperMass>();
 	static List<Wall> allWalls = new ArrayList<Wall>();
+	static Map<Integer, Integer> inGameControls = new HashMap<Integer, Integer>();
 
 	//Toggle is bitfield of 1s in Binary, indicating that all forces are on by default
 	private int toggle =
@@ -54,6 +57,25 @@ public class Springies extends JGEngine
 		int height = 700;
 		double aspect = 16.0 / 9.0;
 		initEngineComponent((int) (height * aspect), height);
+		//set in game controls map
+		setInGameControlsMap();
+	}
+
+	public void setInGameControlsMap(){
+		inGameControls.put(KeyEvent.VK_G, 1); 
+		inGameControls.put(KeyEvent.VK_V, 2); 
+		inGameControls.put(KeyEvent.VK_M, 4); 
+		inGameControls.put(KeyEvent.VK_1, 8); 
+		inGameControls.put(KeyEvent.VK_2, 16); 
+		inGameControls.put(KeyEvent.VK_3, 32); 
+		inGameControls.put(KeyEvent.VK_4, 64); 
+		inGameControls.put(KeyEvent.VK_MINUS, 128); 
+		inGameControls.put(KeyEvent.VK_PLUS, 256); 
+		inGameControls.put(KeyEvent.VK_EQUALS, 256); 
+		inGameControls.put(KeyEvent.VK_UP, 1); 
+		inGameControls.put(KeyEvent.VK_DOWN, -1); 
+
+
 	}
 
 	@Override
@@ -98,73 +120,42 @@ public class Springies extends JGEngine
 				Math.pow(2,4) + Math.pow(2,5) + Math.pow(2,6));
 		toggle=toggle&clearBits8And9; //clears bits 8 and 9 that are for changing muscle amplitude so it's only called once when toggled
 
-		if(getLastKey() == 78){ //if n is pressed add an assembly 
-			clearLastKey();
-			parseXML();
-		}
-		if(getLastKey() == 67){ //if c is pressed clear the screen of all assemblies 
-			clearLastKey();
-			clearAllTheDamnAssemblies();
-		}
-
-		//MAKE A TOGGLE MAP FOR README
-		if(getLastKey() == 71){ //'g'
-			clearLastKey();
-			toggle=toggle^1;
-		}
-		if(getLastKey() == 86){ //'v'
-			clearLastKey();
-			toggle=toggle^2;
-		}
-		if(getLastKey() == 77){ //'m'
-			clearLastKey();
-			toggle=toggle^4;
-		}	
-		if(getLastKey() == 49){ //'1'
-			clearLastKey();
-			toggle=toggle^8;
-		}	
-		if(getLastKey() == 50){ //'2'
-			clearLastKey();
-			toggle=toggle^16;
-		}	
-		if(getLastKey() == 51){ //'3'
-			clearLastKey();
-			toggle=toggle^32;
-		}	
-		if(getLastKey() == 52){ //'4'
-			clearLastKey();
-			toggle=toggle^64;
-		}	 
-
-		if(getLastKey() == 45){ //'-'
-			clearLastKey();
-			toggle=toggle^128;
-		}
-		if(getLastKey() == 61){ //'= or +'
-			clearLastKey();
-			toggle=toggle^256;
-		}
-
-		if(getLastKey() == 38){ //Up key depressed, increase size of frame 
-			clearLastKey();
-			for(Wall wall: allWalls){
-				wall.changeWallSize(WALLED_AREA_ADJUSTMENT);
-			}
-		}	
-		if(getLastKey() == 40){ //Down key depressed, decrease size of frame 
-			clearLastKey();
-			for(Wall wall: allWalls){
-				wall.changeWallSize(-WALLED_AREA_ADJUSTMENT);
-			}
-		}	
-
+		addAndClearAssemblies(getLastKey()); 
+		toggler(getLastKey());
+		changeWallSize(getLastKey()); 	
 		moveObjects();
 		checkCollision(1 + 2, 1);
 	}
+	
+	public void addAndClearAssemblies(int keyEvent){
+		if(keyEvent == KeyEvent.VK_N ){
+			parseXML();
+			clearLastKey();
+		}
+		if(keyEvent == KeyEvent.VK_C){ 
+			clearAllTheDamnAssemblies();
+			clearLastKey();
+		}
+	}
 
-	public void toggler(){
-		
+	public void changeWallSize(int keyEvent){
+		if(keyEvent == KeyEvent.VK_UP || keyEvent == KeyEvent.VK_DOWN){ 
+			for(Wall wall: allWalls){
+				wall.changeWallSize(WALLED_AREA_ADJUSTMENT * inGameControls.get(keyEvent));
+			}
+			clearLastKey();
+		}	
+	}
+
+	public void toggler(int keyEvent){
+		if(!(keyEvent == KeyEvent.VK_UP || keyEvent == KeyEvent.VK_DOWN)){ 
+			Integer toggleVal = inGameControls.get(keyEvent);
+			if(toggleVal!= null){
+				toggle ^=toggleVal; 
+			}
+			clearLastKey();
+		}
+	
 	}
 	@Override
 	public void paintFrame ()
@@ -192,15 +183,15 @@ public class Springies extends JGEngine
 		Wall wall = new Wall("top", WALL_WIDTH, WALL_THICKNESS);
 		wall.setPos(displayWidth() / 2, WALL_MARGIN);
 		allWalls.add(wall);
-		
+
 		wall = new Wall ("bottom",WALL_WIDTH, WALL_THICKNESS);
 		wall.setPos(displayWidth() / 2, displayHeight() - WALL_MARGIN);
 		allWalls.add(wall);
-		
+
 		wall = new Wall ("left",WALL_THICKNESS, WALL_HEIGHT);
 		wall.setPos(WALL_MARGIN, displayHeight() / 2);
 		allWalls.add(wall);
-		
+
 		wall = new Wall("right",WALL_THICKNESS, WALL_HEIGHT);
 		wall.setPos(displayWidth() - WALL_MARGIN, displayHeight() / 2);
 		allWalls.add(wall);

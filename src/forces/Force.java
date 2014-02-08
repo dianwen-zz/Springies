@@ -19,4 +19,5 @@ public abstract class Force extends JGObject{
 	public void toggleForces(int toggle){
 		isOn = ((toggle&bitMask) == bitMask) ? true:false;
 	}
+	
 }

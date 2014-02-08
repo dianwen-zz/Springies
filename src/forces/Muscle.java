@@ -14,6 +14,7 @@ public class Muscle extends Force {
 	private SuperMass massB; 
 	private float amplitude;
 	private float time;
+	JGColor color;
 
 	public Muscle(SuperMass a, SuperMass b, float rl, float c, float amp) {
 		massA = a;
@@ -21,6 +22,7 @@ public class Muscle extends Force {
 		restLength = rl;
 		constant = c;	 
 		amplitude = amp;
+		color = JGColor.pink;
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class Muscle extends Force {
 
 	@Override
 	public void paint(){
-		eng.drawLine(massA.getPos().x, massA.getPos().y, massB.getPos().x, massB.getPos().y, 1, JGColor.gray);
+		eng.drawLine(massA.getPos().x, massA.getPos().y, massB.getPos().x, massB.getPos().y, 1, color);
 	}
 
 	@Override
