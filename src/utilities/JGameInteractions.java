@@ -32,7 +32,10 @@ public class JGameInteractions extends JGEngine
 	Spring mouseSpring;
 
 	//Toggle is bitfield of 1s in Binary, indicating that all forces are on by default
-	private int toggle = 0b001111111;
+	//private int toggle = 0b001111111;
+	//use the line below to initialize toggle if using JRE1.6 or lower. Only JRE1.7 supports binary literals
+	private int toggle = 127;
+	
 	//bit 8 and 9 are default 0 because a value of 1 calls muscle amplitude change methods, refer to setInGameControlsMap method
 	//all other environmental forces are on
 
