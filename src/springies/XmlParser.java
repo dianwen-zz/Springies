@@ -95,18 +95,10 @@ public class XmlParser {
 			System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
 					" constant: " + getNodeAttr("constant", node) + " amplitude: " + getNodeAttr("amplitude", node));
 
-			float constant = 1;
-			if(!(getNodeAttr("constant", node).equals(""))){
-				constant = Float.parseFloat(getNodeAttr("constant", node));
-			}
-			float restLength = 50;
-			if(!(getNodeAttr("restlength", node).equals(""))){
-				restLength = Float.parseFloat(getNodeAttr("restlength", node));
-			}
-			float amplitude = 50;
-			if(!(getNodeAttr("amplitude", node).equals(""))){
-				amplitude = Float.parseFloat(getNodeAttr("amplitude", node));
-			}
+			float constant = getFloatValue(node, "constant");
+			float restLength = getFloatValue(node, "restLength");;
+			float amplitude = getFloatValue(node, "amplitude");;;
+
 			SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
 			SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
 
@@ -124,21 +116,17 @@ public class XmlParser {
 					" vx: " + getNodeAttr("vx", node) + " vy: " + getNodeAttr("vy", node) + " mass: " + getNodeAttr("mass", node));
 
 			float mass = 1;
-			float xv = 0;
-			float yv = 0;
-
 			if(!(getNodeAttr("mass", node).equals(""))){
 				mass = Float.parseFloat(getNodeAttr("mass", node));
 			}
-			if(!(getNodeAttr("xv", node).equals(""))){
-				xv = Float.parseFloat(getNodeAttr("xv", node));
-			}
-			if(!(getNodeAttr("yv", node).equals(""))){
-				yv = Float.parseFloat(getNodeAttr("yv", node));
-			}
-			float x = Float.parseFloat(getNodeAttr("x", node));
-			float y = Float.parseFloat(getNodeAttr("y", node));
+			
+			float xv = getFloatValue(node, "xv");
+			float yv = getFloatValue(node, "yv");
+			float x = getFloatValue(node, "x");
+			float y = getFloatValue(node, "y");
+			
 			String id = getNodeAttr("id", node);
+			
 			Mass tempMass = new Mass(id, x, y+20, mass, xv, yv);
 			allSuperMasses.add(tempMass);
 			obj.put(id, tempMass);
@@ -154,8 +142,9 @@ public class XmlParser {
 			System.out.println("id: " + getNodeAttr("id", node) + " x: " + getNodeAttr("x", node) + " y: " + getNodeAttr("y", node));
 
 			String id = getNodeAttr("id", node);
-			float x = Float.parseFloat(getNodeAttr("x", node));
-			float y = Float.parseFloat(getNodeAttr("y", node));
+			
+			float x = getFloatValue(node, "x");
+			float y = getFloatValue(node, "y");
 
 			Fixed tempFixed = new Fixed(id, x, y);
 			allSuperMasses.add(tempFixed);
@@ -173,20 +162,23 @@ public class XmlParser {
 			System.out.println("a: " + getNodeAttr("a", node) + " b: " + getNodeAttr("b", node) + " restlength: " + getNodeAttr("restlength", node) +
 					" constant: " + getNodeAttr("constant", node));
 
-			float constant = 1;
-			if(!(getNodeAttr("constant", node).equals(""))){
-				constant = Float.parseFloat(getNodeAttr("constant", node));
-			}
-			float restLength = 50;
-			if(!(getNodeAttr("restlength", node).equals(""))){
-				restLength = Float.parseFloat(getNodeAttr("restlength", node));
-			}
+			float constant = getFloatValue(node, "constant");
+			float restLength = getFloatValue(node, "restLength");;
+
 			SuperMass a = (SuperMass) obj.get(getNodeAttr("a", node));
 			SuperMass b = (SuperMass) obj.get(getNodeAttr("b", node));
 
 			force.add(new Spring(a, b, restLength, constant));
 		}
 		System.out.println();
+	}
+	
+	public float getFloatValue(Node node, String name){
+		float value = 0; 
+		if(!(getNodeAttr(name, node).equals(""))){
+			value = Float.parseFloat(getNodeAttr(name, node));
+		}
+		return value; 
 	}
 	
 	protected static String getNodeAttr(String attrName, Node node ) {

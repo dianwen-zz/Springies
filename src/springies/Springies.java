@@ -39,11 +39,11 @@ import forces.WallRepulsion;
 public class Springies extends JGEngine
 {
 	private static final int WALLED_AREA_ADJUSTMENT = 20;
-	static List<Force> force = new ArrayList<Force>();
-	static List<SuperMass> allSuperMasses = new ArrayList<SuperMass>();
-	static List<Wall> allWalls = new ArrayList<Wall>();
-	static Map<Integer, Integer> inGameControls = new HashMap<Integer, Integer>();
-	static XmlParser XmlParser = new XmlParser(); 
+	private static List<Force> force = new ArrayList<Force>();
+	private static List<SuperMass> allSuperMasses = new ArrayList<SuperMass>();
+	private static List<Wall> allWalls = new ArrayList<Wall>();
+	private static Map<Integer, Integer> inGameControls = new HashMap<Integer, Integer>();
+	private static XmlParser XmlParser = new XmlParser(); 
 
 	//Toggle is bitfield of 1s in Binary, indicating that all forces are on by default
 	private int toggle =
@@ -60,7 +60,7 @@ public class Springies extends JGEngine
 		initEngineComponent((int) (height * aspect), height);
 		//set in game controls map
 		setInGameControlsMap();
-		
+
 	}
 
 	public void setInGameControlsMap(){
@@ -76,8 +76,6 @@ public class Springies extends JGEngine
 		inGameControls.put(KeyEvent.VK_EQUALS, 256); 
 		inGameControls.put(KeyEvent.VK_UP, 1); 
 		inGameControls.put(KeyEvent.VK_DOWN, -1); 
-
-
 	}
 
 	@Override
@@ -107,7 +105,7 @@ public class Springies extends JGEngine
 		parseXML(); 
 	}
 
-	
+
 	@Override
 	public void doFrame ()
 	{
@@ -118,18 +116,22 @@ public class Springies extends JGEngine
 			f.calculateForce();
 			f.toggleForces(toggle);
 		}
-
-		int clearBits8And9 = (int) (Math.pow(2,0) + Math.pow(2,1) + Math.pow(2,2) + Math.pow(2,3) +
-				Math.pow(2,4) + Math.pow(2,5) + Math.pow(2,6));
-		toggle=toggle&clearBits8And9; //clears bits 8 and 9 that are for changing muscle amplitude so it's only called once when toggled
-
+		clearBits8And9();
 		addAndClearAssemblies(getLastKey()); 
 		toggler(getLastKey());
 		changeWallSize(getLastKey()); 	
 		moveObjects();
 		checkCollision(1 + 2, 1);
 	}
-	
+
+	public void clearBits8And9(){
+		int clearBits8And9 = (int) (Math.pow(2,0) + Math.pow(2,1) + Math.pow(2,2) + Math.pow(2,3) +
+				Math.pow(2,4) + Math.pow(2,5) + Math.pow(2,6));
+		toggle=toggle&clearBits8And9; //clears bits 8 and 9 that are for changing muscle amplitude so it's only called once when toggled
+
+
+	}
+
 	public void addAndClearAssemblies(int keyEvent){
 		if(keyEvent == KeyEvent.VK_N ){
 			parseXML();
@@ -158,7 +160,7 @@ public class Springies extends JGEngine
 			}
 			clearLastKey();
 		}
-	
+
 	}
 	@Override
 	public void paintFrame ()

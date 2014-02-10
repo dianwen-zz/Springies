@@ -11,5 +11,4 @@ public class Spring extends Muscle{
 		color = JGColor.white;
 	}
 
-
 }
