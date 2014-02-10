@@ -1,11 +1,9 @@
 package physicalObjects;
 
 import jboxGlue.PhysicalObject;
-import jboxGlue.PhysicalObjectCircle;
 
 import org.jbox2d.collision.CircleDef;
 
-import forces.Gravity;
 import jgame.JGColor;
 
 public abstract class SuperMass extends PhysicalObject{

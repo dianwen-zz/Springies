@@ -6,18 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import physicalObjects.Fixed;
+import org.jbox2d.common.Vec2;
+
 import physicalObjects.Mass;
 import physicalObjects.SuperMass;
 import physicalObjects.Wall;
 import jboxGlue.WorldManager;
+import jgame.JGPoint;
 import jgame.platform.JGEngine;
 import forces.Force;
 import forces.Spring;
 
-
 @SuppressWarnings("serial")
-public class Springies extends JGEngine
+public class JGameInteractions extends JGEngine
 {
 	private static final int WALLED_AREA_ADJUSTMENT = 20;
 	private static List<Force> allForces = new ArrayList<Force>();
@@ -25,8 +26,7 @@ public class Springies extends JGEngine
 	private static List<Wall> allWalls = new ArrayList<Wall>();
 	private static Map<Integer, Integer> inGameControls = new HashMap<Integer, Integer>();
 	private static XmlParser parser = new XmlParser(); 
-	private static ClickAndDragCalculations dragger;
-	private static boolean createdMousePositionMass = false;
+	private static boolean createdMousePositionMass;
 	Mass massAtMouse;
 	SuperMass closestMass;
 	Spring mouseSpring;
@@ -36,7 +36,7 @@ public class Springies extends JGEngine
 	//bit 8 and 9 are default 0 because a value of 1 calls muscle amplitude change methods, refer to setInGameControlsMap method
 	//all other environmental forces are on
 
-	public Springies ()
+	public JGameInteractions ()
 	{
 		// set the window size
 		int height = 700;
@@ -44,10 +44,9 @@ public class Springies extends JGEngine
 		initEngineComponent((int) (height * aspect), height);
 		//set in game controls map
 		setInGameControlsMap();
-
 	}
 
-	public void setInGameControlsMap(){ //maps keypresses with the bit associated with them
+	private void setInGameControlsMap(){ //maps keypresses with the bit associated with them
 		inGameControls.put(KeyEvent.VK_G, 1); 
 		inGameControls.put(KeyEvent.VK_V, 2); 
 		inGameControls.put(KeyEvent.VK_M, 4); 
@@ -87,10 +86,21 @@ public class Springies extends JGEngine
 		WorldManager.initWorld(this);
 		addWalls();
 		parser.parseEnvironment();
-		parseAssemblyXML(); //has its own method because it needs to be called outside of initGame
-		dragger = new ClickAndDragCalculations(this);
+		parseAssemblyXML(); //has its own method because it needs to be called outside of initGame to create new assembies when 'n' is pressed
 	}
 
+
+	@Override
+	public void paintFrame ()
+	{ //draws the status of environmental force toggles
+		drawString("G: " + ((toggle&1)==1),20,20,-1);
+		drawString("V: " + ((toggle&2)==2),20,50,-1);
+		drawString("M: " + ((toggle&4)==4),20,80,-1);
+		drawString("1: " + ((toggle&8)==8),20,110,-1);
+		drawString("2: " + ((toggle&16)==16),20,140,-1);
+		drawString("3: " + ((toggle&32)==32),20,170,-1);
+		drawString("4: " + ((toggle&64)==64),20,200,-1);
+	}
 
 	@Override
 	public void doFrame ()
@@ -107,82 +117,10 @@ public class Springies extends JGEngine
 		environmentalForceToggle(getLastKey()); //checks whether or not environmental forces have been toggled
 		changeWallSizeToggle(getLastKey()); //checks toggles for changing the wall size
 		checkMouseClickAndDrag();
-		
+
 		moveObjects();
 		checkCollision(1 + 2, 1);
 	}
-
-	public void checkMouseClickAndDrag() {
-		if(getMouseButton(1) && !createdMousePositionMass && allSuperMasses.size()!=0){
-			closestMass = dragger.getClosestMass(allSuperMasses); //detects mouse click and creates spring for dragging if neccessary
-			massAtMouse = new Mass("massAtMouse",getMousePos().x,getMousePos().y,0,0,0);
-			mouseSpring = new Spring(massAtMouse, closestMass, 0,12);
-			allForces.add(mouseSpring);
-			createdMousePositionMass = true;
-		}
-		if(massAtMouse != null){
-			massAtMouse.setPos(getMousePos().x, getMousePos().y);
-		}
-		if(!getMouseButton(1) && createdMousePositionMass){
-			massAtMouse.remove();
-			mouseSpring.remove();
-			allForces.remove(mouseSpring);
-			createdMousePositionMass = false;
-		}
-	}
-
-	public void clearMuscleToggleBits(){
-		int clearBits8And9 = (int) (Math.pow(2,0) + Math.pow(2,1) + Math.pow(2,2) + Math.pow(2,3) +
-				Math.pow(2,4) + Math.pow(2,5) + Math.pow(2,6));
-		toggle=toggle&clearBits8And9; //clears bits 8 and 9 that are for changing muscle amplitude so it's only called once when toggled
-
-
-	}
-
-	public void addAndClearAssembliesToggle(int keyEvent){
-		if(keyEvent == KeyEvent.VK_N ){
-			parseAssemblyXML();
-			clearLastKey();
-		}
-		if(keyEvent == KeyEvent.VK_C){ 
-			clearAllTheDamnAssemblies();
-			clearLastKey();
-		}
-	}
-
-	public void changeWallSizeToggle(int keyEvent){
-		if(keyEvent == KeyEvent.VK_UP || keyEvent == KeyEvent.VK_DOWN){ 
-			for(Wall wall: allWalls){
-				wall.changeWallSize(WALLED_AREA_ADJUSTMENT * inGameControls.get(keyEvent));
-			}
-			clearLastKey();
-		}	
-	}
-
-	public void environmentalForceToggle(int keyEvent){
-		if(!(keyEvent == KeyEvent.VK_UP || keyEvent == KeyEvent.VK_DOWN)){ 
-			Integer toggleVal = inGameControls.get(keyEvent);
-			if(toggleVal!= null){
-				toggle ^=toggleVal; 
-			}
-			clearLastKey();
-		}
-
-	}
-	@Override
-	public void paintFrame ()
-	{ //draws the status of environmental force toggles
-		drawString("G: " + ((toggle&1)==1),20,20,-1);
-		drawString("V: " + ((toggle&2)==2),20,50,-1);
-		drawString("M: " + ((toggle&4)==4),20,80,-1);
-		drawString("1: " + ((toggle&8)==8),20,110,-1);
-		drawString("2: " + ((toggle&16)==16),20,140,-1);
-		drawString("3: " + ((toggle&32)==32),20,170,-1);
-		drawString("4: " + ((toggle&64)==64),20,200,-1);
-
-	}
-
-
 
 	private void addWalls ()
 	{
@@ -207,16 +145,70 @@ public class Springies extends JGEngine
 		wall = new Wall("right",WALL_THICKNESS, WALL_HEIGHT);
 		wall.setPos(displayWidth() - WALL_MARGIN, displayHeight() / 2);
 		allWalls.add(wall);
-
 	}
 
-	public void parseAssemblyXML(){
+	private void parseAssemblyXML(){
 		parser.parseAssembly(); 
 		allForces = parser.getForce(); 
 		allSuperMasses = parser.getAllSuperMasses();
 	}
 
-	public void clearAllTheDamnAssemblies(){
+	private void checkMouseClickAndDrag() {
+		if(getMouseButton(1) && !createdMousePositionMass && allSuperMasses.size()!=0){ //detects mouse click and creates spring and mass for dragging if necessary
+			closestMass = getClosestMass(allSuperMasses);
+			massAtMouse = new Mass("massAtMouse",getMousePos().x,getMousePos().y,0,0,0);
+			mouseSpring = new Spring(massAtMouse, closestMass, 0,12);
+			allForces.add(mouseSpring);
+			createdMousePositionMass = true;
+		}
+		if(massAtMouse != null){ //updates the mass at one end of the spring with the current coordinates of the mouse click
+			massAtMouse.setPos(getMousePos().x, getMousePos().y);
+		}
+		if(!getMouseButton(1) && createdMousePositionMass){ //remove the mass and spring when the click is released
+			massAtMouse.remove();
+			mouseSpring.remove();
+			allForces.remove(mouseSpring);
+			createdMousePositionMass = false;
+		}
+	}
+
+	private void clearMuscleToggleBits(){
+		int clearBits8And9 = (int) (Math.pow(2,0) + Math.pow(2,1) + Math.pow(2,2) + Math.pow(2,3) +
+				Math.pow(2,4) + Math.pow(2,5) + Math.pow(2,6));
+		toggle=toggle&clearBits8And9; //clears bits 8 and 9 that are for changing muscle amplitude so it's only called once when toggled
+	}
+
+	private void addAndClearAssembliesToggle(int keyEvent){
+		if(keyEvent == KeyEvent.VK_N ){
+			parseAssemblyXML();
+			clearLastKey();
+		}
+		if(keyEvent == KeyEvent.VK_C){ 
+			clearAllTheDamnAssemblies();
+			clearLastKey();
+		}
+	}
+
+	private void changeWallSizeToggle(int keyEvent){
+		if(keyEvent == KeyEvent.VK_UP || keyEvent == KeyEvent.VK_DOWN){ 
+			for(Wall wall: allWalls){
+				wall.changeWallSize(WALLED_AREA_ADJUSTMENT * inGameControls.get(keyEvent));
+			}
+			clearLastKey();
+		}	
+	}
+
+	private void environmentalForceToggle(int keyEvent){
+		if(!(keyEvent == KeyEvent.VK_UP || keyEvent == KeyEvent.VK_DOWN)){ 
+			Integer toggleVal = inGameControls.get(keyEvent);
+			if(toggleVal!= null){
+				toggle ^=toggleVal; 
+			}
+			clearLastKey();
+		}
+	}
+
+	private void clearAllTheDamnAssemblies(){
 		for(SuperMass m: allSuperMasses){
 			m.remove();
 		}
@@ -225,5 +217,23 @@ public class Springies extends JGEngine
 			f.remove();
 		}
 		allForces.clear();
+	}
+
+	private SuperMass getClosestMass(List<SuperMass> masses) {
+		double minDistance = Double.MAX_VALUE;
+		SuperMass mass = null;
+		for(SuperMass m: masses){
+			double distance = findDistance(m.getPos(), getMousePos());
+			if(distance<minDistance){
+				minDistance = distance;
+				mass = m;
+			}
+		}
+		System.out.println(mass.getPos().toString());
+		return mass;
+	}
+
+	private double findDistance(Vec2 a, JGPoint b){
+		return Math.sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
 	}
 }

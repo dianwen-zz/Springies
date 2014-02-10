@@ -15,6 +15,14 @@ public class Muscle extends Force {
 	private float amplitude;
 	private float time;
 	JGColor color;
+	
+	/**
+	 * @param a is mass at one end
+	 * @param b is the mass at the other end
+	 * @param rl is the rest length
+	 * @param c is the spring constant
+	 * @param amp is the amplitude of the sinusoid
+	 */
 
 	public Muscle(SuperMass a, SuperMass b, float rl, float c, float amp) {
 		massA = a;
@@ -38,15 +46,15 @@ public class Muscle extends Force {
 		massB.setForce(-constant*(distance-newRestLength)*(locB.x-locA.x)/distance, -constant*(distance-newRestLength)*(locB.y-locA.y)/distance);
 	}
 
-	public double findDistance(Vec2 a, Vec2 b){
+	private double findDistance(Vec2 a, Vec2 b){
 		return Math.sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
 	}
 
-	public void increaseAmplitude(){
+	private void increaseAmplitude(){
 		amplitude+=30;
 	}
 
-	public void decreaseAmplitude(){
+	private void decreaseAmplitude(){
 		if(amplitude>=0)
 			amplitude-=30;
 	}

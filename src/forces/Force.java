@@ -2,10 +2,6 @@ package forces;
 
 import jgame.JGObject;
 
-import org.jbox2d.common.Vec2;
-
-import physicalObjects.SuperMass;
-
 public abstract class Force extends JGObject{
 	protected boolean isOn = true;
 	protected int bitMask;
@@ -17,7 +13,7 @@ public abstract class Force extends JGObject{
 
 	public abstract void calculateForce();
 	
-	public void toggleForces(int toggle){
+	public void toggleForces(int toggle){ //toggling behavior is the same for all forces except WallRepulsion (all binary, except WallRepulsion has 4 walls to toggle)
 		isOn = ((toggle&bitMask) == bitMask) ? true:false;
 	}
 	

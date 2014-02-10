@@ -2,8 +2,6 @@ package forces;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jbox2d.common.Vec2;
-
 import physicalObjects.SuperMass;
 
 public class Gravity extends Force{

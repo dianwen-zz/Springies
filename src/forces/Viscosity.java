@@ -10,8 +10,8 @@ public class Viscosity extends Force{
 	private float magnitude;
 	private List<SuperMass> masses;
 
-	public Viscosity(float visc, ArrayList<SuperMass> m){
-		magnitude = visc;
+	public Viscosity(float viscosity, ArrayList<SuperMass> m){
+		magnitude = viscosity;
 		masses = m;
 		bitMask = 2;
 	}

@@ -21,11 +21,7 @@ import forces.Spring;
 import forces.Viscosity;
 import forces.WallRepulsion;
 
-import org.jbox2d.common.Vec2;
-import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import physicalObjects.Fixed;
 import physicalObjects.Mass;
@@ -70,6 +66,11 @@ public class XmlParser {
 		centerOfMassExponent = grabEnvironmentTag(doc, "centermass", "exponent");
 		System.out.println("Center of Mass Exponent: " + centerOfMassExponent);
 
+		parseWallProperties(doc);
+
+	}
+
+	public void parseWallProperties(Document doc) {
 		NodeList walls = doc.getElementsByTagName("wall");
 		topWall[0]=getFloatValue(walls.item(0),"magnitude");
 		topWall[1]=getFloatValue(walls.item(0),"exponent");
@@ -82,14 +83,8 @@ public class XmlParser {
 		
 		rightWall[0]=getFloatValue(walls.item(3),"magnitude");
 		rightWall[1]=getFloatValue(walls.item(3),"exponent");
-
 	}
 	
-	private float grabEnvironmentTag(Document doc, String tagName, String property){
-		NodeList nodeNodes = doc.getElementsByTagName(tagName);
-		return getFloatValue(nodeNodes.item(0),property);
-	}
-
 	private Document setupDocument() {
 		final FileChooser fc = new FileChooser();
 		File file = fc.getFile();
@@ -210,6 +205,11 @@ public class XmlParser {
 		System.out.println();
 	}
 	
+	private float grabEnvironmentTag(Document doc, String tagName, String property){
+		NodeList nodeNodes = doc.getElementsByTagName(tagName);
+		return getFloatValue(nodeNodes.item(0),property);
+	}
+
 	private float getFloatValue(Node node, String name){
 		float value = 1; 
 		if(!(getNodeAttr(name, node).equals(""))){

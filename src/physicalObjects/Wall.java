@@ -2,22 +2,17 @@ package physicalObjects;
 
 import org.jbox2d.common.Vec2;
 
-import jboxGlue.PhysicalObject;
 import jboxGlue.PhysicalObjectRect;
 import jgame.JGColor;
-import jgame.platform.JGEngine;
-import org.jbox2d.common.Vec2;
-
-
 
 public class Wall extends PhysicalObjectRect {
+	
 	private String wall_side; 
 	
-	
-	public Wall(String wall_side, double wallDimension_1, double wallDimension_2){
+	public Wall(String wall_side, double width, double thickness){
 		super("wall", 2, JGColor.green,
-				wallDimension_1,
-				wallDimension_2);			
+				width,
+				thickness);			
 		this.wall_side = wall_side; 
 	}
 	
@@ -32,7 +27,4 @@ public class Wall extends PhysicalObjectRect {
 		if(wall_side.equals("right"))
 			this.setPos(point.x - WALLED_AREA_ADJUSTMENT, point.y );
 	}
-
-	
-	
 }

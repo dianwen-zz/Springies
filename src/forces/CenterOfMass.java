@@ -34,7 +34,7 @@ public class CenterOfMass extends Force{
 		}
 	}
 
-	public Vec2 calculateCenter(){
+	private Vec2 calculateCenter(){
 		float totalMass = 0;
 		float weightedXLoc = 0; //Summation of m_i*x_i, where m_i is the mass of a mass, and x_i is its x coordinate
 		float weightedYLoc = 0;

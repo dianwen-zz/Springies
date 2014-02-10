@@ -1,11 +1,10 @@
 package utilities;
 import java.io.*;
-import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
-import javax.swing.filechooser.*;
 
+@SuppressWarnings("serial")
 public class FileChooser extends JPanel implements ActionListener {
     public File getFile() {
     	JFileChooser fc = new JFileChooser();
