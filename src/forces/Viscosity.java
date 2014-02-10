@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jbox2d.common.Vec2;
 
-import nodes.SuperMass;
+import physicalObjects.SuperMass;
 
 public class Viscosity extends Force{
 	private float magnitude;

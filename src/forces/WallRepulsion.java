@@ -3,7 +3,7 @@ package forces;
 import java.util.ArrayList;
 import java.util.List;
 
-import nodes.SuperMass;
+import physicalObjects.SuperMass;
 
 public class WallRepulsion extends Force{
 	private float[] topWall = new float[2]; //1st element is magnitude, 2nd is exponent

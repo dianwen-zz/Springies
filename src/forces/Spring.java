@@ -1,8 +1,9 @@
 package forces;
 import jgame.JGColor;
-import nodes.SuperMass;
 
 import org.jbox2d.common.Vec2;
+
+import physicalObjects.SuperMass;
 
 public class Spring extends Muscle{
 

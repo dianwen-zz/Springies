@@ -1,38 +1,16 @@
-package springies;
+package utilities;
 
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import jboxGlue.PhysicalObject;
-import jboxGlue.PhysicalObjectRect;
+import physicalObjects.SuperMass;
+import physicalObjects.Wall;
 import jboxGlue.WorldManager;
-import jgame.JGColor;
-import jgame.JGPoint;
 import jgame.platform.JGEngine;
-import nodes.Fixed;
-import nodes.Mass;
-import nodes.SuperMass;
-
-import org.jbox2d.common.Vec2;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import forces.CenterOfMass;
 import forces.Force;
-import forces.Gravity;
-import forces.Muscle;
-import forces.Spring;
-import forces.Viscosity;
-import forces.WallRepulsion;
 
 
 @SuppressWarnings("serial")
@@ -43,27 +21,25 @@ public class Springies extends JGEngine
 	private static List<SuperMass> allSuperMasses = new ArrayList<SuperMass>();
 	private static List<Wall> allWalls = new ArrayList<Wall>();
 	private static Map<Integer, Integer> inGameControls = new HashMap<Integer, Integer>();
-	private static XmlParser XmlParser = new XmlParser(); 
+	private static XmlParser parser = new XmlParser(); 
 
 	//Toggle is bitfield of 1s in Binary, indicating that all forces are on by default
-	private int toggle =
-			(int)  (Math.pow(2,0) + Math.pow(2,1) + Math.pow(2,2) + Math.pow(2,3) +
-					Math.pow(2,4) + Math.pow(2,5) + Math.pow(2,6) + Math.pow(2,7) +
-					Math.pow(2,8)); //only 7 out of 9 bits are used for toggling
-	//bit 8 and 9 are default 0 because a value of 1 calls muscle amplitude change methods
+	private int toggle = 0b001111111;
+	//bit 8 and 9 are default 0 because a value of 1 calls muscle amplitude change methods, refer to setInGameControlsMap method
+	//all other environmental forces are on
 
 	public Springies ()
 	{
 		// set the window size
 		int height = 700;
-		double aspect = 16.0 / 9.0;
+		double aspect = 16.0 / 9.0; //aspect ratio for the window
 		initEngineComponent((int) (height * aspect), height);
 		//set in game controls map
 		setInGameControlsMap();
 
 	}
 
-	public void setInGameControlsMap(){
+	public void setInGameControlsMap(){ //maps keypresses with the bit associated with them
 		inGameControls.put(KeyEvent.VK_G, 1); 
 		inGameControls.put(KeyEvent.VK_V, 2); 
 		inGameControls.put(KeyEvent.VK_M, 4); 
@@ -102,7 +78,8 @@ public class Springies extends JGEngine
 		// so set all directions (e.g., forces, velocities) in world coords
 		WorldManager.initWorld(this);
 		addWalls();
-		parseXML(); 
+		parser.parseEnvironment();
+		parseAssemblyXML(); //has its own method because it needs to be called outside of initGame
 	}
 
 
@@ -116,15 +93,15 @@ public class Springies extends JGEngine
 			f.calculateForce();
 			f.toggleForces(toggle);
 		}
-		clearBits8And9();
-		addAndClearAssemblies(getLastKey()); 
-		toggler(getLastKey());
-		changeWallSize(getLastKey()); 	
+		clearMuscleToggleBits();
+		addAndClearAssembliesToggle(getLastKey()); //checks whether or not keypresses have been made to clear or add assemblies
+		environmentalForceToggle(getLastKey()); //checks whether or not environmental forces have been toggled
+		changeWallSizeToggle(getLastKey()); //checks toggles for changing the wall size
 		moveObjects();
 		checkCollision(1 + 2, 1);
 	}
 
-	public void clearBits8And9(){
+	public void clearMuscleToggleBits(){
 		int clearBits8And9 = (int) (Math.pow(2,0) + Math.pow(2,1) + Math.pow(2,2) + Math.pow(2,3) +
 				Math.pow(2,4) + Math.pow(2,5) + Math.pow(2,6));
 		toggle=toggle&clearBits8And9; //clears bits 8 and 9 that are for changing muscle amplitude so it's only called once when toggled
@@ -132,9 +109,9 @@ public class Springies extends JGEngine
 
 	}
 
-	public void addAndClearAssemblies(int keyEvent){
+	public void addAndClearAssembliesToggle(int keyEvent){
 		if(keyEvent == KeyEvent.VK_N ){
-			parseXML();
+			parseAssemblyXML();
 			clearLastKey();
 		}
 		if(keyEvent == KeyEvent.VK_C){ 
@@ -143,7 +120,7 @@ public class Springies extends JGEngine
 		}
 	}
 
-	public void changeWallSize(int keyEvent){
+	public void changeWallSizeToggle(int keyEvent){
 		if(keyEvent == KeyEvent.VK_UP || keyEvent == KeyEvent.VK_DOWN){ 
 			for(Wall wall: allWalls){
 				wall.changeWallSize(WALLED_AREA_ADJUSTMENT * inGameControls.get(keyEvent));
@@ -152,7 +129,7 @@ public class Springies extends JGEngine
 		}	
 	}
 
-	public void toggler(int keyEvent){
+	public void environmentalForceToggle(int keyEvent){
 		if(!(keyEvent == KeyEvent.VK_UP || keyEvent == KeyEvent.VK_DOWN)){ 
 			Integer toggleVal = inGameControls.get(keyEvent);
 			if(toggleVal!= null){
@@ -164,7 +141,7 @@ public class Springies extends JGEngine
 	}
 	@Override
 	public void paintFrame ()
-	{
+	{ //draws the status of environmental force toggles
 		drawString("G: " + ((toggle&1)==1),20,20,-1);
 		drawString("V: " + ((toggle&2)==2),20,50,-1);
 		drawString("M: " + ((toggle&4)==4),20,80,-1);
@@ -203,21 +180,10 @@ public class Springies extends JGEngine
 
 	}
 
-	public void parseXML(){
-		XmlParser.parse(); 
-		force = XmlParser.getForce(); 
-		allSuperMasses = XmlParser.getAllSuperMasses();
-	}
-
-	protected static String getNodeAttr(String attrName, Node node ) {
-		NamedNodeMap attrs = node.getAttributes();
-		for (int y = 0; y < attrs.getLength(); y++ ) {
-			Node attr = attrs.item(y);
-			if (attr.getNodeName().equalsIgnoreCase(attrName)) {
-				return attr.getNodeValue();
-			}
-		}
-		return "";
+	public void parseAssemblyXML(){
+		parser.parseAssembly(); 
+		force = parser.getForce(); 
+		allSuperMasses = parser.getAllSuperMasses();
 	}
 
 	public void clearAllTheDamnAssemblies(){

@@ -10,11 +10,11 @@
   </nodes>
 
   <links>
-    <spring a="m1" b="m2"/>
-    <spring a="m2" b="m3"/>
-    <spring a="m3" b="m4"/>
-    <spring a="m4" b="m1"/>
-    <spring a="m1" b="m3"/>
-    <spring a="m2" b="m4"/>
+    <spring a="m1" b="m2" restlength="100"/>
+    <spring a="m2" b="m3" restlength="100"/>
+    <spring a="m3" b="m4" restlength="100"/>
+    <spring a="m4" b="m1" restlength="100"/>
+    <spring a="m1" b="m3" restlength="100"/>
+    <spring a="m2" b="m4" restlength="100"/>
   </links>
 </model>

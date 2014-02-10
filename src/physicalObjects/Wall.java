@@ -1,4 +1,4 @@
-package springies;
+package physicalObjects;
 
 import org.jbox2d.common.Vec2;
 

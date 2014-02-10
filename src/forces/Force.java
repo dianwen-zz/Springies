@@ -1,9 +1,10 @@
 package forces;
 
 import jgame.JGObject;
-import nodes.SuperMass;
 
 import org.jbox2d.common.Vec2;
+
+import physicalObjects.SuperMass;
 
 public abstract class Force extends JGObject{
 	protected boolean isOn = true;

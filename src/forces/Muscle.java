@@ -4,7 +4,7 @@ import jgame.JGColor;
 
 import org.jbox2d.common.Vec2;
 
-import nodes.SuperMass;
+import physicalObjects.SuperMass;
 
 public class Muscle extends Force {
 
@@ -36,7 +36,6 @@ public class Muscle extends Force {
 
 		massA.setForce(constant*(distance-newRestLength)*(locB.x-locA.x)/distance, constant*(distance-newRestLength)*(locB.y-locA.y)/distance);
 		massB.setForce(-constant*(distance-newRestLength)*(locB.x-locA.x)/distance, -constant*(distance-newRestLength)*(locB.y-locA.y)/distance);
-		System.out.println(amplitude);
 	}
 
 	public double findDistance(Vec2 a, Vec2 b){

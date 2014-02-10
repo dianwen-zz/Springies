@@ -1,6 +1,8 @@
-import springies.Springies;
 import java.awt.Dimension;
+
 import javax.swing.JFrame;
+
+import utilities.Springies;
 
 
 /**

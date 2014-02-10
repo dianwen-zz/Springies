@@ -1,4 +1,4 @@
-package nodes;
+package physicalObjects;
 
 import jgame.JGColor;
 
