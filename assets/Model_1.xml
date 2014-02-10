@@ -8,7 +8,7 @@
 		<mass id="m2" x="750" y="300" mass="1" />
 	</nodes>
 	<links>
-		<muscle a="m1" b="m2" restlength="200" constant="0.05"
+		<spring a="m1" b="m2" restlength="250" constant="0.05"
 			amplitude="100" />
 	</links>
 

@@ -24,13 +24,13 @@ public class Wall extends PhysicalObjectRect {
 	public void changeWallSize(int WALLED_AREA_ADJUSTMENT){
 		Vec2 point = this.getPos();
 		if(wall_side.equals("top"))
-			this.setPos(point.x, point.y - WALLED_AREA_ADJUSTMENT);
+			this.setPos(point.x, point.y + WALLED_AREA_ADJUSTMENT);
 		if(wall_side.equals("bottom"))
-			this.setPos(point.x, point.y +WALLED_AREA_ADJUSTMENT);
+			this.setPos(point.x, point.y - WALLED_AREA_ADJUSTMENT);
 		if(wall_side.equals("left"))
-			this.setPos(point.x -WALLED_AREA_ADJUSTMENT, point.y);
+			this.setPos(point.x + WALLED_AREA_ADJUSTMENT, point.y);
 		if(wall_side.equals("right"))
-			this.setPos(point.x+WALLED_AREA_ADJUSTMENT, point.y );
+			this.setPos(point.x - WALLED_AREA_ADJUSTMENT, point.y );
 	}
 
 	

@@ -6,22 +6,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import physicalObjects.Fixed;
+import physicalObjects.Mass;
 import physicalObjects.SuperMass;
 import physicalObjects.Wall;
 import jboxGlue.WorldManager;
 import jgame.platform.JGEngine;
 import forces.Force;
+import forces.Spring;
 
 
 @SuppressWarnings("serial")
 public class Springies extends JGEngine
 {
 	private static final int WALLED_AREA_ADJUSTMENT = 20;
-	private static List<Force> force = new ArrayList<Force>();
+	private static List<Force> allForces = new ArrayList<Force>();
 	private static List<SuperMass> allSuperMasses = new ArrayList<SuperMass>();
 	private static List<Wall> allWalls = new ArrayList<Wall>();
 	private static Map<Integer, Integer> inGameControls = new HashMap<Integer, Integer>();
 	private static XmlParser parser = new XmlParser(); 
+	private static ClickAndDragCalculations dragger;
+	private static boolean createdMousePositionMass = false;
+	Mass massAtMouse;
+	SuperMass closestMass;
+	Spring mouseSpring;
 
 	//Toggle is bitfield of 1s in Binary, indicating that all forces are on by default
 	private int toggle = 0b001111111;
@@ -47,8 +55,8 @@ public class Springies extends JGEngine
 		inGameControls.put(KeyEvent.VK_2, 16); 
 		inGameControls.put(KeyEvent.VK_3, 32); 
 		inGameControls.put(KeyEvent.VK_4, 64); 
-		inGameControls.put(KeyEvent.VK_MINUS, 128); 
-		inGameControls.put(KeyEvent.VK_PLUS, 256); 
+		inGameControls.put(KeyEvent.VK_PLUS, 128); 
+		inGameControls.put(KeyEvent.VK_MINUS, 256); 
 		inGameControls.put(KeyEvent.VK_EQUALS, 256); 
 		inGameControls.put(KeyEvent.VK_UP, 1); 
 		inGameControls.put(KeyEvent.VK_DOWN, -1); 
@@ -80,6 +88,7 @@ public class Springies extends JGEngine
 		addWalls();
 		parser.parseEnvironment();
 		parseAssemblyXML(); //has its own method because it needs to be called outside of initGame
+		dragger = new ClickAndDragCalculations(this);
 	}
 
 
@@ -89,7 +98,7 @@ public class Springies extends JGEngine
 		// update game objects
 		WorldManager.getWorld().step(1f, 1);
 
-		for(Force f: force){
+		for(Force f: allForces){
 			f.calculateForce();
 			f.toggleForces(toggle);
 		}
@@ -97,8 +106,29 @@ public class Springies extends JGEngine
 		addAndClearAssembliesToggle(getLastKey()); //checks whether or not keypresses have been made to clear or add assemblies
 		environmentalForceToggle(getLastKey()); //checks whether or not environmental forces have been toggled
 		changeWallSizeToggle(getLastKey()); //checks toggles for changing the wall size
+		checkMouseClickAndDrag();
+		
 		moveObjects();
 		checkCollision(1 + 2, 1);
+	}
+
+	public void checkMouseClickAndDrag() {
+		if(getMouseButton(1) && !createdMousePositionMass && allSuperMasses.size()!=0){
+			closestMass = dragger.getClosestMass(allSuperMasses); //detects mouse click and creates spring for dragging if neccessary
+			massAtMouse = new Mass("massAtMouse",getMousePos().x,getMousePos().y,0,0,0);
+			mouseSpring = new Spring(massAtMouse, closestMass, 0,12);
+			allForces.add(mouseSpring);
+			createdMousePositionMass = true;
+		}
+		if(massAtMouse != null){
+			massAtMouse.setPos(getMousePos().x, getMousePos().y);
+		}
+		if(!getMouseButton(1) && createdMousePositionMass){
+			massAtMouse.remove();
+			mouseSpring.remove();
+			allForces.remove(mouseSpring);
+			createdMousePositionMass = false;
+		}
 	}
 
 	public void clearMuscleToggleBits(){
@@ -182,7 +212,7 @@ public class Springies extends JGEngine
 
 	public void parseAssemblyXML(){
 		parser.parseAssembly(); 
-		force = parser.getForce(); 
+		allForces = parser.getForce(); 
 		allSuperMasses = parser.getAllSuperMasses();
 	}
 
@@ -190,8 +220,10 @@ public class Springies extends JGEngine
 		for(SuperMass m: allSuperMasses){
 			m.remove();
 		}
-		for(Force f: force){
+		allSuperMasses.clear();
+		for(Force f: allForces){
 			f.remove();
 		}
+		allForces.clear();
 	}
 }
