@@ -232,7 +232,6 @@ public class JGameInteractions extends JGEngine
 				mass = m;
 			}
 		}
-		System.out.println(mass.getPos().toString());
 		return mass;
 	}
 
