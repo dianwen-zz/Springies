@@ -9,6 +9,7 @@ This project is a mass/spring/environmental force simulator using the JBox2D phy
 
 Two file choosers will initially appear. First, load an environment XML file. Then, load an assembly XML file to draw and animate an assembly. Press 'n' in the simulation to load another file, and press 'c' to clear all assemblies.
 
+
 Press the keys displayed in the animation to toggle individual forces:
 * 'G' - Gravity
 * 'V' - Viscosity
