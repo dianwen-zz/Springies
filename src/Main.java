@@ -4,12 +4,6 @@ import javax.swing.JFrame;
 
 import utilities.JGameInteractions;
 
-
-/**
- * Creates window that can be moved, resized, and closed by the user.
- * 
- * @author Robert C. Duvall
- */
 public class Main
 {
     // constants
