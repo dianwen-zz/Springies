@@ -4,6 +4,7 @@ Springies
 **Team Members: Dianwen Li & Anthony Olawo
 Date started: Jan 30th**
 
+**Note: This project is not representative of my current design knowledge, as it is one of my first projects**
 
 This project is a mass/spring/environmental force simulator using the JBox2D physics engine and the JGame game engine.
 
